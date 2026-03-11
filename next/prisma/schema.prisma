@@ -1,0 +1,289 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Sectors ───────────────────────────────────────────
+
+model Sector {
+  id          String   @id // e.g. "sante", "informatique"
+  color       String   // CSS color variable name
+  professions Profession[]
+  scenarios   Scenario[]
+  translations SectorTranslation[]
+}
+
+model SectorTranslation {
+  id       Int    @id @default(autoincrement())
+  sectorId String
+  locale   String // "fr", "de", "en"
+  name     String // "Santé", "Gesundheit", "Health"
+  sector   Sector @relation(fields: [sectorId], references: [id])
+
+  @@unique([sectorId, locale])
+}
+
+// ─── Professions ───────────────────────────────────────
+
+model Profession {
+  id       String @id // e.g. "assc", "informaticien"
+  sectorId String
+  type     String // "CFC", "AFP", "CFC+"
+  duration Int    // years
+  icon     String
+  urlOrientation String
+
+  // 12-dimension profile (0-10 scale)
+  manuel        Int @default(0)
+  intellectuel  Int @default(0)
+  creatif       Int @default(0)
+  analytique    Int @default(0)
+  interieur     Int @default(0)
+  exterieur     Int @default(0)
+  equipe        Int @default(0)
+  independant   Int @default(0)
+  contactHumain Int @default(0)
+  technique     Int @default(0)
+  routine       Int @default(0)
+  variete       Int @default(0)
+
+  sector       Sector @relation(fields: [sectorId], references: [id])
+  translations ProfessionTranslation[]
+  salaries     SalaryInfo[]
+  scenarioLinks ScenarioEndProfession[]
+}
+
+model ProfessionTranslation {
+  id           Int    @id @default(autoincrement())
+  professionId String
+  locale       String
+
+  name         String // "Assistant/e en soins et santé communautaire CFC"
+  description  String
+  activities   String[] // array of daily activities
+  qualities    String[] // required qualities
+  passerelle   String?  // optional aeronautics pathway info
+
+  profession Profession @relation(fields: [professionId], references: [id])
+
+  @@unique([professionId, locale])
+}
+
+model SalaryInfo {
+  id           Int    @id @default(autoincrement())
+  professionId String
+  // Apprenticeship salaries by year
+  apprenticeYear1 Int?
+  apprenticeYear2 Int?
+  apprenticeYear3 Int?
+  apprenticeYear4 Int?
+  // Post-CFC salary range
+  postCfcMin   Int
+  postCfcMax   Int
+
+  profession Profession @relation(fields: [professionId], references: [id])
+
+  @@unique([professionId])
+}
+
+// ─── Scenarios ─────────────────────────────────────────
+
+model Scenario {
+  id       String @id // e.g. "hopital"
+  sectorId String
+  icon     String
+
+  sector       Sector @relation(fields: [sectorId], references: [id])
+  translations ScenarioTranslation[]
+  scenes       Scene[]
+}
+
+model ScenarioTranslation {
+  id         Int    @id @default(autoincrement())
+  scenarioId String
+  locale     String
+
+  title       String
+  description String
+
+  scenario Scenario @relation(fields: [scenarioId], references: [id])
+
+  @@unique([scenarioId, locale])
+}
+
+model Scene {
+  id         String @id @default(cuid())
+  scenarioId String
+  sceneKey   String // e.g. "arrivee", "urgences1" — the original ID within the scenario
+  isFinal    Boolean @default(false)
+  sortOrder  Int     @default(0)
+
+  scenario    Scenario @relation(fields: [scenarioId], references: [id])
+  translations SceneTranslation[]
+  choices     Choice[]
+  endProfessions ScenarioEndProfession[]
+
+  @@unique([scenarioId, sceneKey])
+}
+
+model SceneTranslation {
+  id      Int    @id @default(autoincrement())
+  sceneId String
+  locale  String
+  text    String // the narrative text
+
+  scene Scene @relation(fields: [sceneId], references: [id])
+
+  @@unique([sceneId, locale])
+}
+
+model Choice {
+  id      String @id @default(cuid())
+  sceneId String
+  nextSceneKey String? // sceneKey to go to (within same scenario)
+  sortOrder Int @default(0)
+
+  // Profile tags (impact on dimensions)
+  manuel        Int @default(0)
+  intellectuel  Int @default(0)
+  creatif       Int @default(0)
+  analytique    Int @default(0)
+  interieur     Int @default(0)
+  exterieur     Int @default(0)
+  equipe        Int @default(0)
+  independant   Int @default(0)
+  contactHumain Int @default(0)
+  technique     Int @default(0)
+  routine       Int @default(0)
+  variete       Int @default(0)
+
+  scene        Scene @relation(fields: [sceneId], references: [id])
+  translations ChoiceTranslation[]
+}
+
+model ChoiceTranslation {
+  id       Int    @id @default(autoincrement())
+  choiceId String
+  locale   String
+  text     String // choice text shown to user
+
+  choice Choice @relation(fields: [choiceId], references: [id])
+
+  @@unique([choiceId, locale])
+}
+
+// Link table for professions shown at end of scenario
+model ScenarioEndProfession {
+  id           Int    @id @default(autoincrement())
+  sceneId      String
+  professionId String
+
+  scene      Scene      @relation(fields: [sceneId], references: [id])
+  profession Profession @relation(fields: [professionId], references: [id])
+
+  @@unique([sceneId, professionId])
+}
+
+// ─── Users & Game State ────────────────────────────────
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 12-dimension accumulated profile
+  manuel        Int @default(0)
+  intellectuel  Int @default(0)
+  creatif       Int @default(0)
+  analytique    Int @default(0)
+  interieur     Int @default(0)
+  exterieur     Int @default(0)
+  equipe        Int @default(0)
+  independant   Int @default(0)
+  contactHumain Int @default(0)
+  technique     Int @default(0)
+  routine       Int @default(0)
+  variete       Int @default(0)
+
+  totalPoints        Int @default(0)
+  darkMode           Boolean @default(false)
+  preferredLocale    String @default("fr")
+
+  completedScenarios UserScenario[]
+  choicesHistory     UserChoice[]
+  careersViewed      UserCareerView[]
+  badges             UserBadge[]
+}
+
+model UserScenario {
+  id         Int      @id @default(autoincrement())
+  userId     String
+  scenarioId String
+  completedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, scenarioId])
+}
+
+model UserChoice {
+  id         Int      @id @default(autoincrement())
+  userId     String
+  scenarioId String
+  sceneKey   String
+  choiceId   String
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model UserCareerView {
+  id           Int      @id @default(autoincrement())
+  userId       String
+  professionId String
+  viewedAt     DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, professionId])
+}
+
+model UserBadge {
+  id       Int      @id @default(autoincrement())
+  userId   String
+  badgeId  String
+  earnedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, badgeId])
+}
+
+// ─── Badges ────────────────────────────────────────────
+
+model Badge {
+  id            String @id // e.g. "premier_pas"
+  icon          String
+  conditionType String // "scenariosCompleted", "careersViewed", "specificScenario", "points"
+  conditionValue Int?   // count threshold
+  conditionScenarioId String? // for "specificScenario" type
+
+  translations BadgeTranslation[]
+}
+
+model BadgeTranslation {
+  id          Int    @id @default(autoincrement())
+  badgeId     String
+  locale      String
+  name        String
+  description String
+
+  badge Badge @relation(fields: [badgeId], references: [id])
+
+  @@unique([badgeId, locale])
+}

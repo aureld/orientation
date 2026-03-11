@@ -1,0 +1,114 @@
+{
+  "meta": {
+    "title": "Berufsabenteuer — Entdecke deinen zukünftigen Beruf",
+    "description": "Ein Berufsorientierungsspiel zur Entdeckung der Schweizer Berufe"
+  },
+  "common": {
+    "back": "Zurück",
+    "continue": "Weiter",
+    "points": "Pkt",
+    "years": "Jahre",
+    "month": "Monat",
+    "compatibility": "Kompatibilität",
+    "loading": "Laden..."
+  },
+  "home": {
+    "title": "Berufsabenteuer",
+    "subtitle": "Entdecke deinen zukünftigen Beruf durch Abenteuer!",
+    "namePlaceholder": "Dein Vorname...",
+    "nameRequired": "Gib deinen Vornamen ein!",
+    "start": "Abenteuer starten",
+    "continueGame": "Mein Spiel fortsetzen",
+    "about": "Über uns",
+    "reset": "Neu starten",
+    "resetConfirm": "Bist du sicher? Dein gesamter Fortschritt wird gelöscht.",
+    "aboutText": "Berufsabenteuer — Ein Berufsorientierungsspiel basierend auf Daten von berufsberatung.ch.\n\nEntwickelt für Jugendliche im Kanton Zürich.\n\n33 echte Schweizer Berufe (EFZ/EBA)\n11 immersive Szenarien\n\nViel Spass beim Erkunden!"
+  },
+  "scenarios": {
+    "title": "Berufsabenteuer",
+    "welcome": "Hallo {name}!",
+    "instructions": "Wähle ein Szenario und erlebe einen Tag in einem neuen Beruf.",
+    "progress": "Fortschritt",
+    "viewResults": "Meine Ergebnisse anzeigen ({count} Szenarien abgeschlossen)",
+    "exploreAll": "Alle Berufe erkunden",
+    "myProfile": "Mein Profil & Abzeichen"
+  },
+  "scenario": {
+    "quit": "Szenario verlassen",
+    "complete": "Szenario abgeschlossen",
+    "bravo": "Bravo!",
+    "endMessage": "Du hast das Szenario \"{title}\" abgeschlossen. Deine Entscheidungen sagen viel über deine Vorlieben aus!",
+    "discoveredCareers": "Entdeckte Berufe",
+    "continueAdventures": "Weitere Abenteuer",
+    "viewResults": "Meine Ergebnisse"
+  },
+  "results": {
+    "title": "Deine Ergebnisse",
+    "profileTitle": "Dein Profil, {name}!",
+    "basedOn": "Basierend auf {count} erkundeten Szenarien",
+    "recommended": "Deine empfohlenen Berufe",
+    "recommendedSub": "Die Berufe, die am besten zu deinen Vorlieben passen",
+    "exploreAll": "Alle Berufe erkunden",
+    "backToScenarios": "Zurück zu den Szenarien"
+  },
+  "career": {
+    "title": "Berufsprofil",
+    "description": "Beschreibung",
+    "dailyActivities": "Tägliche Aktivitäten",
+    "apprenticeSalary": "Lehrlingslohn (CHF/Monat)",
+    "postCfcSalary": "Lohn nach {type}",
+    "requiredQualities": "Erforderliche Eigenschaften",
+    "aeronauticsPathway": "Luftfahrt-Weiterbildung",
+    "viewOnOrientation": "Auf berufsberatung.ch ansehen",
+    "flipHint": "Klicke für Details",
+    "flipBack": "Karte umdrehen",
+    "yearN": "{n}. Jahr"
+  },
+  "careers": {
+    "title": "Alle Berufe",
+    "count": "33 Berufe zu entdecken",
+    "instructions": "Klicke auf einen Beruf, um sein vollständiges Profil zu sehen."
+  },
+  "profile": {
+    "title": "Mein Profil",
+    "stats": {
+      "points": "Punkte",
+      "scenarios": "Szenarien",
+      "badges": "Abzeichen",
+      "careersSeen": "Berufe gesehen"
+    },
+    "radarTitle": "Dein Präferenz-Radar",
+    "badgesTitle": "Deine Abzeichen",
+    "locked": "???"
+  },
+  "dim": {
+    "manuel": "Manuell",
+    "intellectuel": "Intellektuell",
+    "creatif": "Kreativ",
+    "analytique": "Analytisch",
+    "interieur": "Innen",
+    "exterieur": "Aussen",
+    "equipe": "Team",
+    "independant": "Selbstständig",
+    "contactHumain": "Menschenkontakt",
+    "technique": "Technisch",
+    "routine": "Routine",
+    "variete": "Abwechslung"
+  },
+  "theme": {
+    "toggle": "Design ändern"
+  },
+  "sectors": {
+    "sante": "Gesundheit",
+    "informatique": "Informatik",
+    "commerce": "Handel",
+    "construction": "Bau",
+    "technique": "Technik",
+    "artisanat": "Handwerk & Kunst",
+    "gastronomie": "Gastronomie",
+    "nature": "Natur",
+    "social": "Soziales",
+    "automobile": "Automobil",
+    "aeronautique": "Luftfahrt"
+  }
+}

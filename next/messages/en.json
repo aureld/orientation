@@ -1,0 +1,114 @@
+{
+  "meta": {
+    "title": "Career Adventure — Discover Your Future Career",
+    "description": "A career orientation game to discover Swiss professions"
+  },
+  "common": {
+    "back": "Back",
+    "continue": "Continue",
+    "points": "pts",
+    "years": "years",
+    "month": "month",
+    "compatibility": "compatibility",
+    "loading": "Loading..."
+  },
+  "home": {
+    "title": "Career Adventure",
+    "subtitle": "Discover your future career through adventures!",
+    "namePlaceholder": "Your first name...",
+    "nameRequired": "Enter your first name!",
+    "start": "Start the adventure",
+    "continueGame": "Continue my game",
+    "about": "About",
+    "reset": "Start over",
+    "resetConfirm": "Are you sure? All your progress will be deleted.",
+    "aboutText": "Career Adventure — A career orientation game based on data from orientation.ch.\n\nDesigned for young people in the Canton of Zurich.\n\n33 real Swiss professions (CFC/AFP)\n11 immersive scenarios\n\nHappy exploring!"
+  },
+  "scenarios": {
+    "title": "Career Adventure",
+    "welcome": "Hi {name}!",
+    "instructions": "Choose a scenario and experience a day in a new career.",
+    "progress": "Progress",
+    "viewResults": "View my results ({count} scenarios completed)",
+    "exploreAll": "Explore all careers",
+    "myProfile": "My profile & badges"
+  },
+  "scenario": {
+    "quit": "Quit scenario",
+    "complete": "Scenario complete",
+    "bravo": "Well done!",
+    "endMessage": "You've completed the scenario \"{title}\". Your choices say a lot about your preferences!",
+    "discoveredCareers": "Discovered careers",
+    "continueAdventures": "Continue adventures",
+    "viewResults": "View my results"
+  },
+  "results": {
+    "title": "Your results",
+    "profileTitle": "Your profile, {name}!",
+    "basedOn": "Based on {count} scenarios explored",
+    "recommended": "Your recommended careers",
+    "recommendedSub": "The careers that best match your preferences",
+    "exploreAll": "Explore all careers",
+    "backToScenarios": "Back to scenarios"
+  },
+  "career": {
+    "title": "Career profile",
+    "description": "Description",
+    "dailyActivities": "Daily activities",
+    "apprenticeSalary": "Apprenticeship salary (CHF/month)",
+    "postCfcSalary": "Salary after {type}",
+    "requiredQualities": "Required qualities",
+    "aeronauticsPathway": "Aeronautics pathway",
+    "viewOnOrientation": "View on orientation.ch",
+    "flipHint": "Click to see details",
+    "flipBack": "Flip the card",
+    "yearN": "Year {n}"
+  },
+  "careers": {
+    "title": "All careers",
+    "count": "33 careers to explore",
+    "instructions": "Click on a career to see its full profile."
+  },
+  "profile": {
+    "title": "My profile",
+    "stats": {
+      "points": "Points",
+      "scenarios": "Scenarios",
+      "badges": "Badges",
+      "careersSeen": "Careers seen"
+    },
+    "radarTitle": "Your preferences radar",
+    "badgesTitle": "Your badges",
+    "locked": "???"
+  },
+  "dim": {
+    "manuel": "Manual",
+    "intellectuel": "Intellectual",
+    "creatif": "Creative",
+    "analytique": "Analytical",
+    "interieur": "Indoor",
+    "exterieur": "Outdoor",
+    "equipe": "Teamwork",
+    "independant": "Independent",
+    "contactHumain": "People-oriented",
+    "technique": "Technical",
+    "routine": "Routine",
+    "variete": "Variety"
+  },
+  "theme": {
+    "toggle": "Toggle theme"
+  },
+  "sectors": {
+    "sante": "Health",
+    "informatique": "IT",
+    "commerce": "Commerce",
+    "construction": "Construction",
+    "technique": "Engineering",
+    "artisanat": "Crafts & Arts",
+    "gastronomie": "Gastronomy",
+    "nature": "Nature",
+    "social": "Social",
+    "automobile": "Automotive",
+    "aeronautique": "Aeronautics"
+  }
+}

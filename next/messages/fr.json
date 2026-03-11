@@ -1,0 +1,114 @@
+{
+  "meta": {
+    "title": "Aventure Métier — Découvre ton futur métier",
+    "description": "Un jeu d'orientation professionnelle pour découvrir les métiers suisses"
+  },
+  "common": {
+    "back": "Retour",
+    "continue": "Continuer",
+    "points": "pts",
+    "years": "ans",
+    "month": "mois",
+    "compatibility": "compatibilité",
+    "loading": "Chargement..."
+  },
+  "home": {
+    "title": "Aventure Métier",
+    "subtitle": "Découvre ton futur métier en vivant des aventures !",
+    "namePlaceholder": "Ton prénom...",
+    "nameRequired": "Entre ton prénom !",
+    "start": "Commencer l'aventure",
+    "continueGame": "Continuer ma partie",
+    "about": "À propos",
+    "reset": "Recommencer",
+    "resetConfirm": "Tu es sûr ? Toute ta progression sera effacée.",
+    "aboutText": "Aventure Métier — Un jeu d'orientation professionnelle basé sur les données de orientation.ch.\n\nConçu pour les jeunes du Canton de Zurich.\n\n33 métiers suisses réels (CFC/AFP)\n11 scénarios immersifs\n\nBonne exploration !"
+  },
+  "scenarios": {
+    "title": "Aventure Métier",
+    "welcome": "Salut {name} !",
+    "instructions": "Choisis un scénario et vis une journée dans un nouveau métier.",
+    "progress": "Progression",
+    "viewResults": "Voir mes résultats ({count} scénarios complétés)",
+    "exploreAll": "Explorer tous les métiers",
+    "myProfile": "Mon profil & badges"
+  },
+  "scenario": {
+    "quit": "Quitter le scénario",
+    "complete": "Scénario terminé",
+    "bravo": "Bravo !",
+    "endMessage": "Tu as terminé le scénario \"{title}\". Tes choix en disent long sur tes préférences !",
+    "discoveredCareers": "Métiers découverts",
+    "continueAdventures": "Continuer les aventures",
+    "viewResults": "Voir mes résultats"
+  },
+  "results": {
+    "title": "Tes résultats",
+    "profileTitle": "Ton profil, {name} !",
+    "basedOn": "Basé sur {count} scénarios explorés",
+    "recommended": "Tes métiers recommandés",
+    "recommendedSub": "Les métiers qui correspondent le mieux à tes préférences",
+    "exploreAll": "Explorer tous les métiers",
+    "backToScenarios": "Retour aux scénarios"
+  },
+  "career": {
+    "title": "Fiche métier",
+    "description": "Description",
+    "dailyActivities": "Activités quotidiennes",
+    "apprenticeSalary": "Salaire apprentissage (CHF/mois)",
+    "postCfcSalary": "Salaire après {type}",
+    "requiredQualities": "Qualités requises",
+    "aeronauticsPathway": "Passerelle aéronautique",
+    "viewOnOrientation": "Voir sur orientation.ch",
+    "flipHint": "Clique pour voir les détails",
+    "flipBack": "Retourner la carte",
+    "yearN": "{n}e année"
+  },
+  "careers": {
+    "title": "Tous les métiers",
+    "count": "33 métiers à explorer",
+    "instructions": "Clique sur un métier pour découvrir sa fiche complète."
+  },
+  "profile": {
+    "title": "Mon profil",
+    "stats": {
+      "points": "Points",
+      "scenarios": "Scénarios",
+      "badges": "Badges",
+      "careersSeen": "Fiches vues"
+    },
+    "radarTitle": "Ton radar de préférences",
+    "badgesTitle": "Tes badges",
+    "locked": "???"
+  },
+  "dim": {
+    "manuel": "Manuel",
+    "intellectuel": "Intellectuel",
+    "creatif": "Créatif",
+    "analytique": "Analytique",
+    "interieur": "Intérieur",
+    "exterieur": "Extérieur",
+    "equipe": "Équipe",
+    "independant": "Indépendant",
+    "contactHumain": "Contact humain",
+    "technique": "Technique",
+    "routine": "Routine",
+    "variete": "Variété"
+  },
+  "theme": {
+    "toggle": "Changer le thème"
+  },
+  "sectors": {
+    "sante": "Santé",
+    "informatique": "Informatique",
+    "commerce": "Commerce",
+    "construction": "Construction",
+    "technique": "Technique",
+    "artisanat": "Artisanat & Arts",
+    "gastronomie": "Gastronomie",
+    "nature": "Nature",
+    "social": "Social",
+    "automobile": "Automobile",
+    "aeronautique": "Aéronautique"
+  }
+}
