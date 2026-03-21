@@ -1,21 +1,27 @@
-"use client";
-
-import { useTranslations } from "next-intl";
-import { useParams } from "next/navigation";
+import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { HeaderBar } from "@/components/header-bar";
+import { getCareerById } from "@/app/actions/career";
+import { FlipCard } from "@/components/flip-card";
 
-// Placeholder — will fetch profession from DB
-export default function CareerPage() {
-  const t = useTranslations("career");
-  const params = useParams<{ id: string }>();
+export default async function CareerPage({
+  params,
+}: {
+  params: Promise<{ locale: string; id: string }>;
+}) {
+  const { locale, id } = await params;
+  const [t, career] = await Promise.all([
+    getTranslations("career"),
+    getCareerById(id, locale),
+  ]);
+
+  if (!career) notFound();
 
   return (
     <div className="animate-fade-in mx-auto max-w-2xl px-4 pb-12">
       <HeaderBar title={t("title")} showBack />
-
-      <div className="mt-6 text-center text-muted italic">
-        Career detail for <strong>{params.id}</strong> will be loaded from the
-        database with the flip card component.
+      <div className="mt-6">
+        <FlipCard career={career} />
       </div>
     </div>
   );

@@ -38,7 +38,7 @@ AVENTURE.professions = [
     salaireApprentissage: { 1: 700, 2: 900, 3: 1200 },
     salaireApresCFC: { min: 4300, max: 5200 },
     qualitesRequises: ["Precision", "Sens du contact", "Discretion", "Esprit scientifique"],
-    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=1308",
+    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=19",
     icon: "\ud83d\udc8a",
     profil: { manuel: 4, intellectuel: 7, creatif: 2, analytique: 7, interieur: 10, exterieur: 0, equipe: 5, independant: 6, contactHumain: 8, technique: 6, routine: 7, variete: 4 }
   },
@@ -100,7 +100,7 @@ AVENTURE.professions = [
     salaireApprentissage: { 1: 600, 2: 800, 3: 1000, 4: 1300 },
     salaireApresCFC: { min: 4600, max: 6200 },
     qualitesRequises: ["Creativite", "Polyvalence", "Sens de la communication", "Aisance numerique"],
-    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=320",
+    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=184",
     icon: "\ud83c\udfa8",
     profil: { manuel: 2, intellectuel: 7, creatif: 8, analytique: 6, interieur: 9, exterieur: 1, equipe: 7, independant: 5, contactHumain: 6, technique: 7, routine: 3, variete: 9 }
   },
@@ -142,7 +142,7 @@ AVENTURE.professions = [
     salaireApprentissage: { 1: 800, 2: 1000, 3: 1500 },
     salaireApresCFC: { min: 4200, max: 5500 },
     qualitesRequises: ["Organisation", "Communication", "Rigueur", "Polyvalence"],
-    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=383",
+    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=99",
     icon: "\ud83d\udcbc",
     profil: { manuel: 1, intellectuel: 7, creatif: 3, analytique: 6, interieur: 10, exterieur: 0, equipe: 7, independant: 5, contactHumain: 7, technique: 4, routine: 7, variete: 4 }
   },
@@ -162,7 +162,7 @@ AVENTURE.professions = [
     salaireApprentissage: { 1: 750, 2: 950, 3: 1250 },
     salaireApresCFC: { min: 4000, max: 5000 },
     qualitesRequises: ["Sens du contact", "Dynamisme", "Presentation soignee", "Persuasion"],
-    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=384",
+    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=135",
     icon: "\ud83d\udecd\ufe0f",
     profil: { manuel: 3, intellectuel: 5, creatif: 4, analytique: 5, interieur: 8, exterieur: 2, equipe: 6, independant: 5, contactHumain: 9, technique: 3, routine: 6, variete: 5 }
   },
@@ -182,7 +182,7 @@ AVENTURE.professions = [
     salaireApprentissage: { 1: 750, 2: 950, 3: 1300 },
     salaireApresCFC: { min: 4300, max: 5500 },
     qualitesRequises: ["Organisation", "Endurance physique", "Precision", "Esprit pratique"],
-    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=130",
+    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=943",
     icon: "\ud83d\udce6",
     profil: { manuel: 6, intellectuel: 5, creatif: 2, analytique: 7, interieur: 7, exterieur: 3, equipe: 6, independant: 6, contactHumain: 4, technique: 6, routine: 7, variete: 4 }
   },
@@ -204,7 +204,7 @@ AVENTURE.professions = [
     salaireApprentissage: { 1: 957, 2: 1326, 3: 1862 },
     salaireApresCFC: { min: 5000, max: 6200 },
     qualitesRequises: ["Force physique", "Resistance aux intemperies", "Precision", "Esprit d'equipe"],
-    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=134",
+    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=926",
     icon: "\ud83e\uddf1",
     profil: { manuel: 10, intellectuel: 2, creatif: 3, analytique: 4, interieur: 1, exterieur: 10, equipe: 9, independant: 3, contactHumain: 5, technique: 6, routine: 6, variete: 5 }
   },
@@ -224,7 +224,7 @@ AVENTURE.professions = [
     salaireApprentissage: { 1: 800, 2: 1045, 3: 1420, 4: 1810 },
     salaireApresCFC: { min: 5000, max: 6000 },
     qualitesRequises: ["Habilete manuelle", "Pas de vertige", "Force physique", "Precision"],
-    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=64",
+    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=39",
     icon: "\ud83e\udeb5",
     profil: { manuel: 10, intellectuel: 3, creatif: 5, analytique: 5, interieur: 2, exterieur: 9, equipe: 8, independant: 4, contactHumain: 4, technique: 7, routine: 4, variete: 7 }
   },
@@ -244,7 +244,7 @@ AVENTURE.professions = [
     salaireApprentissage: { 1: 600, 2: 800, 3: 1100, 4: 1400 },
     salaireApresCFC: { min: 4800, max: 6000 },
     qualitesRequises: ["Sens spatial", "Precision", "Creativite", "Maitrise informatique"],
-    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=84",
+    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=1716",
     icon: "\ud83d\udcd0",
     profil: { manuel: 3, intellectuel: 7, creatif: 8, analytique: 7, interieur: 9, exterieur: 2, equipe: 5, independant: 7, contactHumain: 4, technique: 8, routine: 5, variete: 6 }
   },
@@ -286,7 +286,7 @@ AVENTURE.professions = [
     salaireApprentissage: { 1: 750, 2: 950, 3: 1250, 4: 1600 },
     salaireApresCFC: { min: 4600, max: 6300 },
     qualitesRequises: ["Precision extreme", "Patience", "Esprit technique", "Sens spatial"],
-    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=244",
+    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=233",
     icon: "\u2699\ufe0f",
     profil: { manuel: 8, intellectuel: 6, creatif: 4, analytique: 8, interieur: 8, exterieur: 2, equipe: 5, independant: 7, contactHumain: 2, technique: 10, routine: 4, variete: 7 }
   },
@@ -306,7 +306,7 @@ AVENTURE.professions = [
     salaireApprentissage: { 1: 600, 2: 800, 3: 1050, 4: 1350 },
     salaireApresCFC: { min: 4600, max: 6000 },
     qualitesRequises: ["Logique", "Precision", "Curiosite technique", "Resolution de problemes"],
-    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=26",
+    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=23",
     icon: "\ud83e\udd16",
     profil: { manuel: 6, intellectuel: 7, creatif: 5, analytique: 8, interieur: 8, exterieur: 2, equipe: 5, independant: 7, contactHumain: 2, technique: 10, routine: 4, variete: 6 }
   },
@@ -346,7 +346,7 @@ AVENTURE.professions = [
     salaireApprentissage: { 1: 600, 2: 800, 3: 1050, 4: 1350 },
     salaireApresCFC: { min: 4800, max: 6500 },
     qualitesRequises: ["Precision", "Esprit analytique", "Patience", "Passion pour la technologie"],
-    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=92",
+    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=94",
     icon: "\ud83d\udd0c",
     profil: { manuel: 5, intellectuel: 8, creatif: 5, analytique: 9, interieur: 9, exterieur: 1, equipe: 4, independant: 8, contactHumain: 2, technique: 10, routine: 4, variete: 6 },
     passerelle: "Specialisation possible en avionique pour travailler dans l'aeronautique (SR Technics, RUAG, etc.)"
@@ -369,7 +369,7 @@ AVENTURE.professions = [
     salaireApprentissage: { 1: 700, 2: 1000, 3: 1350, 4: 1650 },
     salaireApresCFC: { min: 4500, max: 5500 },
     qualitesRequises: ["Habilete manuelle", "Sens esthetique", "Patience", "Creativite"],
-    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=88",
+    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=282",
     icon: "\ud83e\ude91",
     profil: { manuel: 10, intellectuel: 3, creatif: 8, analytique: 4, interieur: 8, exterieur: 2, equipe: 3, independant: 9, contactHumain: 2, technique: 6, routine: 4, variete: 7 }
   },
@@ -389,7 +389,7 @@ AVENTURE.professions = [
     salaireApprentissage: { 1: 850, 2: 1100, 3: 1400 },
     salaireApresCFC: { min: 4200, max: 5000 },
     qualitesRequises: ["Creativite culinaire", "Leve-tot", "Precision", "Sens du gout"],
-    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=50",
+    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=1465",
     icon: "\ud83c\udf5e",
     profil: { manuel: 9, intellectuel: 3, creatif: 8, analytique: 4, interieur: 10, exterieur: 0, equipe: 6, independant: 6, contactHumain: 4, technique: 5, routine: 6, variete: 5 }
   },
@@ -409,7 +409,7 @@ AVENTURE.professions = [
     salaireApprentissage: { 1: 550, 2: 700, 3: 900 },
     salaireApresCFC: { min: 4000, max: 4500 },
     qualitesRequises: ["Creativite", "Sens du contact", "Dexterite", "Sens esthetique"],
-    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=70",
+    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=44",
     icon: "\u2702\ufe0f",
     profil: { manuel: 8, intellectuel: 2, creatif: 9, analytique: 2, interieur: 10, exterieur: 0, equipe: 4, independant: 7, contactHumain: 10, technique: 3, routine: 5, variete: 6 }
   },
@@ -431,7 +431,7 @@ AVENTURE.professions = [
     salaireApprentissage: { 1: 1020, 2: 1300, 3: 1550 },
     salaireApresCFC: { min: 4300, max: 5500 },
     qualitesRequises: ["Creativite culinaire", "Resistance au stress", "Rapidite", "Travail en equipe"],
-    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=78",
+    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=68",
     icon: "\ud83d\udc68\u200d\ud83c\udf73",
     profil: { manuel: 9, intellectuel: 3, creatif: 8, analytique: 3, interieur: 10, exterieur: 0, equipe: 8, independant: 4, contactHumain: 5, technique: 5, routine: 4, variete: 8 }
   },
@@ -451,7 +451,7 @@ AVENTURE.professions = [
     salaireApprentissage: { 1: 1020, 2: 1300, 3: 1550 },
     salaireApresCFC: { min: 4200, max: 5200 },
     qualitesRequises: ["Sens de l'accueil", "Polyvalence", "Langues etrangeres", "Elegance"],
-    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=190",
+    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=277",
     icon: "\ud83c\udfe8",
     profil: { manuel: 5, intellectuel: 5, creatif: 4, analytique: 4, interieur: 8, exterieur: 2, equipe: 8, independant: 3, contactHumain: 10, technique: 3, routine: 5, variete: 7 }
   },
@@ -473,7 +473,7 @@ AVENTURE.professions = [
     salaireApprentissage: { 1: 1200, 2: 1400, 3: 1600 },
     salaireApresCFC: { min: 4200, max: 5500 },
     qualitesRequises: ["Amour de la nature", "Endurance physique", "Autonomie", "Polyvalence"],
-    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=5",
+    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=8",
     icon: "\ud83c\udf3e",
     profil: { manuel: 10, intellectuel: 4, creatif: 3, analytique: 5, interieur: 2, exterieur: 10, equipe: 5, independant: 8, contactHumain: 3, technique: 6, routine: 5, variete: 8 }
   },
@@ -493,7 +493,7 @@ AVENTURE.professions = [
     salaireApprentissage: { 1: 900, 2: 1200, 3: 1500 },
     salaireApresCFC: { min: 4500, max: 5500 },
     qualitesRequises: ["Force physique", "Amour de la nature", "Prudence", "Autonomie"],
-    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=105",
+    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=124",
     icon: "\ud83c\udf32",
     profil: { manuel: 10, intellectuel: 2, creatif: 2, analytique: 4, interieur: 0, exterieur: 10, equipe: 6, independant: 7, contactHumain: 2, technique: 6, routine: 4, variete: 7 }
   },
@@ -513,7 +513,7 @@ AVENTURE.professions = [
     salaireApprentissage: { 1: 850, 2: 1050, 3: 1300 },
     salaireApresCFC: { min: 4200, max: 5200 },
     qualitesRequises: ["Sens esthetique", "Patience", "Amour des plantes", "Bonne condition physique"],
-    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=115",
+    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=1713",
     icon: "\ud83c\udf3b",
     profil: { manuel: 9, intellectuel: 3, creatif: 6, analytique: 4, interieur: 2, exterieur: 9, equipe: 5, independant: 7, contactHumain: 4, technique: 5, routine: 5, variete: 7 }
   },
@@ -535,7 +535,7 @@ AVENTURE.professions = [
     salaireApprentissage: { 1: 830, 2: 1040, 3: 1390 },
     salaireApresCFC: { min: 4500, max: 5500 },
     qualitesRequises: ["Empathie", "Patience", "Creativite", "Sens des responsabilites"],
-    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=1135",
+    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=1051",
     icon: "\ud83e\udde1",
     profil: { manuel: 4, intellectuel: 6, creatif: 7, analytique: 4, interieur: 7, exterieur: 3, equipe: 8, independant: 4, contactHumain: 10, technique: 2, routine: 4, variete: 8 }
   },
@@ -557,7 +557,7 @@ AVENTURE.professions = [
     salaireApprentissage: { 1: 400, 2: 700, 3: 1000, 4: 1200 },
     salaireApresCFC: { min: 4200, max: 5500 },
     qualitesRequises: ["Creativite", "Sens esthetique", "Maitrise informatique", "Ouverture d'esprit"],
-    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=111",
+    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=138",
     icon: "\ud83c\udfa8",
     profil: { manuel: 4, intellectuel: 6, creatif: 10, analytique: 4, interieur: 10, exterieur: 0, equipe: 5, independant: 8, contactHumain: 5, technique: 6, routine: 3, variete: 8 }
   },
@@ -577,7 +577,7 @@ AVENTURE.professions = [
     salaireApprentissage: { 1: 600, 2: 800, 3: 1000, 4: 1400 },
     salaireApresCFC: { min: 4400, max: 5500 },
     qualitesRequises: ["Sens du detail", "Maitrise informatique", "Sens esthetique", "Rigueur"],
-    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=242",
+    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=232",
     icon: "\ud83d\udcf0",
     profil: { manuel: 4, intellectuel: 6, creatif: 8, analytique: 6, interieur: 10, exterieur: 0, equipe: 5, independant: 7, contactHumain: 3, technique: 7, routine: 5, variete: 6 }
   },
@@ -599,7 +599,7 @@ AVENTURE.professions = [
     salaireApprentissage: { 1: 700, 2: 900, 3: 1150, 4: 1400 },
     salaireApresCFC: { min: 4500, max: 5500 },
     qualitesRequises: ["Sens technique", "Logique", "Habilete manuelle", "Curiosite"],
-    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=137",
+    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=1029",
     icon: "\ud83d\ude97",
     profil: { manuel: 9, intellectuel: 4, creatif: 3, analytique: 7, interieur: 8, exterieur: 2, equipe: 5, independant: 7, contactHumain: 4, technique: 9, routine: 5, variete: 6 }
   },
@@ -621,7 +621,7 @@ AVENTURE.professions = [
     salaireApprentissage: { 1: 700, 2: 900, 3: 1600 },
     salaireApresCFC: { min: 4500, max: 5500 },
     qualitesRequises: ["Sens des couleurs", "Precision", "Bonne condition physique", "Travail en hauteur"],
-    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=232",
+    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=216",
     icon: "\ud83c\udfa8",
     profil: { manuel: 9, intellectuel: 2, creatif: 6, analytique: 3, interieur: 5, exterieur: 5, equipe: 7, independant: 5, contactHumain: 4, technique: 5, routine: 6, variete: 5 }
   },
@@ -643,7 +643,7 @@ AVENTURE.professions = [
     salaireApprentissage: { 1: 750, 2: 950, 3: 1250, 4: 1600 },
     salaireApresCFC: { min: 5000, max: 6800 },
     qualitesRequises: ["Precision extreme", "Rigueur", "Passion pour l'aviation", "Sens des responsabilites"],
-    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=244",
+    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=233",
     icon: "\u2708\ufe0f",
     profil: { manuel: 8, intellectuel: 6, creatif: 3, analytique: 8, interieur: 7, exterieur: 3, equipe: 6, independant: 6, contactHumain: 3, technique: 10, routine: 5, variete: 6 },
     passerelle: "Acces via Polymecanicien/ne CFC puis formation complementaire aeronautique. SR Technics et RUAG a Zurich forment ces specialistes."
@@ -664,7 +664,7 @@ AVENTURE.professions = [
     salaireApprentissage: { 1: 800, 2: 1000, 3: 1400 },
     salaireApresCFC: { min: 4500, max: 5800 },
     qualitesRequises: ["Organisation", "Resistance au stress", "Communication", "Reactivite"],
-    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=383",
+    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=1075",
     icon: "\ud83d\udee9\ufe0f",
     profil: { manuel: 5, intellectuel: 6, creatif: 3, analytique: 7, interieur: 4, exterieur: 6, equipe: 9, independant: 3, contactHumain: 7, technique: 6, routine: 5, variete: 8 },
     passerelle: "Possibilite d'evoluer vers controleur/euse du trafic aerien avec une formation superieure (skyguide)."
@@ -685,7 +685,7 @@ AVENTURE.professions = [
     salaireApprentissage: { 1: 600, 2: 800, 3: 1050, 4: 1350 },
     salaireApresCFC: { min: 5200, max: 7000 },
     qualitesRequises: ["Precision", "Esprit analytique", "Passion aeronautique", "Rigueur"],
-    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=92",
+    urlOrientation: "https://www.orientation.ch/dyn/show/1900?id=94",
     icon: "\ud83d\udef0\ufe0f",
     profil: { manuel: 5, intellectuel: 9, creatif: 4, analytique: 9, interieur: 7, exterieur: 3, equipe: 5, independant: 7, contactHumain: 3, technique: 10, routine: 4, variete: 7 },
     passerelle: "Formation d'electronicien CFC suivie d'une specialisation avionique. Employeurs : SR Technics, RUAG, Pilatus Aircraft."

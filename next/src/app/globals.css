@@ -167,12 +167,17 @@ body {
 .flip-card {
   perspective: 1000px;
   width: 100%;
+  max-width: 450px;
+  margin: 0 auto;
+  min-height: 400px;
   cursor: pointer;
 }
 
 .flip-card-inner {
   position: relative;
-  transition: transform 0.5s;
+  width: 100%;
+  min-height: 400px;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   transform-style: preserve-3d;
 }
 
@@ -182,37 +187,161 @@ body {
 
 .flip-card-front,
 .flip-card-back {
+  position: absolute;
+  width: 100%;
+  min-height: 400px;
   backface-visibility: hidden;
   border-radius: 1rem;
   background: var(--color-surface);
-  padding: 1.5rem;
+  padding: 2rem 1.5rem;
   box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
 }
 
 .flip-card-front {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
+  justify-content: center;
+  gap: 1rem;
   text-align: center;
 }
 
 .flip-card-back {
-  position: absolute;
-  inset: 0;
-  overflow-y: auto;
   transform: rotateY(180deg);
+  overflow-y: auto;
+}
+
+.flip-card-front .card-icon {
+  font-size: 4rem;
+  margin-bottom: 0.5rem;
+}
+
+.flip-card-front .card-type {
+  display: inline-block;
+  padding: 0.25rem 0.875rem;
+  border-radius: 1.25rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: rgba(108, 99, 255, 0.1);
+  color: var(--color-accent);
+}
+
+.flip-card-front .card-match {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.flip-card-front .sector-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.flip-hint {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+/* ─── Card detail sections (flip-card back) ────────── */
+
+.card-detail-section {
+  margin-bottom: 1.25rem;
+}
+
+.card-detail-section h3 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-muted);
+  margin-bottom: 0.5rem;
+}
+
+.card-detail-section p {
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.card-detail-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.card-detail-section li {
+  padding: 0.25rem 0;
+  padding-left: 1rem;
+  position: relative;
+  font-size: 0.95rem;
+}
+
+.card-detail-section li::before {
+  content: '\2022';
+  position: absolute;
+  left: 0;
+  color: var(--color-accent);
+  font-weight: bold;
 }
 
 /* ─── Tags ──────────────────────────────────────────── */
 
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
 .tag {
   display: inline-block;
-  border-radius: 9999px;
   padding: 0.25rem 0.75rem;
-  font-size: 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
   font-weight: 600;
+  background: rgba(108, 99, 255, 0.1);
+  color: var(--color-accent);
+}
+
+/* ─── Orientation link ─────────────────────────────── */
+
+.link-orientation {
+  display: block;
+  text-align: center;
+  padding: 0.875rem;
+  background: var(--color-accent);
+  color: white;
+  border-radius: 0.75rem;
+  text-decoration: none;
+  font-weight: 700;
+  margin-top: 1rem;
+  transition: background 0.2s;
+}
+.link-orientation:hover {
+  background: var(--color-accent-light);
+}
+
+/* ─── Passerelle box ───────────────────────────────── */
+
+.passerelle-box {
+  background: rgba(108, 99, 255, 0.1);
+  border: 2px solid var(--color-accent);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+.passerelle-box h4 {
+  color: var(--color-accent);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.375rem;
+}
+.passerelle-box p {
+  font-size: 0.9rem;
 }
 
 /* ─── Badges ────────────────────────────────────────── */
@@ -303,30 +432,44 @@ body {
 
 .salary-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
   gap: 0.5rem;
-}
-
-@media (min-width: 400px) {
-  .salary-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
 }
 
 .salary-item {
   border-radius: 0.5rem;
   background: var(--color-background);
-  padding: 0.75rem;
+  padding: 0.5rem;
   text-align: center;
 }
 
 .salary-item .year {
   font-size: 0.75rem;
   color: var(--color-muted);
+  font-weight: 600;
 }
 
 .salary-item .amount {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: var(--color-accent);
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+
+.salary-post {
+  background: rgba(39, 174, 96, 0.1);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+.salary-post .label {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  font-weight: 600;
+}
+
+.salary-post .range {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #27ae60;
 }

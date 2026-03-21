@@ -3,6 +3,17 @@ set -e
 
 PORT="${1:-3000}"
 
+# Ensure PostgreSQL is running (pg_ctl is more reliable than brew services after reboots)
+PG_DATA="/opt/homebrew/var/postgresql@18"
+PG_CTL="/opt/homebrew/opt/postgresql@18/bin/pg_ctl"
+
+if "$PG_CTL" -D "$PG_DATA" status &>/dev/null; then
+  echo "✅ PostgreSQL already running"
+else
+  echo "🗄️  Starting PostgreSQL..."
+  "$PG_CTL" -D "$PG_DATA" start -l /opt/homebrew/var/log/postgresql@18.log
+fi
+
 # Ensure Prisma dev server is running
 if npx prisma dev ls 2>&1 | grep -q "running"; then
   echo "✅ Prisma dev server already running"

@@ -22,7 +22,7 @@
     "about": "Über uns",
     "reset": "Neu starten",
     "resetConfirm": "Bist du sicher? Dein gesamter Fortschritt wird gelöscht.",
-    "aboutText": "Berufsabenteuer — Ein Berufsorientierungsspiel basierend auf Daten von berufsberatung.ch.\n\nEntwickelt für Jugendliche im Kanton Zürich.\n\n33 echte Schweizer Berufe (EFZ/EBA)\n11 immersive Szenarien\n\nViel Spass beim Erkunden!"
+    "aboutText": "Berufsabenteuer — Ein Berufsorientierungsspiel basierend auf Daten von berufsberatung.ch.\n\nEntwickelt für Jugendliche im Kanton Zürich.\n\n31 echte Schweizer Berufe (EFZ/EBA)\n11 immersive Szenarien\n\nViel Spass beim Erkunden!"
   },
   "scenarios": {
     "title": "Berufsabenteuer",
@@ -66,7 +66,7 @@
   },
   "careers": {
     "title": "Alle Berufe",
-    "count": "33 Berufe zu entdecken",
+    "count": "31 Berufe zu entdecken",
     "instructions": "Klicke auf einen Beruf, um sein vollständiges Profil zu sehen."
   },
   "profile": {

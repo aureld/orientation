@@ -22,7 +22,7 @@
     "about": "About",
     "reset": "Start over",
     "resetConfirm": "Are you sure? All your progress will be deleted.",
-    "aboutText": "Career Adventure — A career orientation game based on data from orientation.ch.\n\nDesigned for young people in the Canton of Zurich.\n\n33 real Swiss professions (CFC/AFP)\n11 immersive scenarios\n\nHappy exploring!"
+    "aboutText": "Career Adventure — A career orientation game based on data from orientation.ch.\n\nDesigned for young people in the Canton of Zurich.\n\n31 real Swiss professions (CFC/AFP)\n11 immersive scenarios\n\nHappy exploring!"
   },
   "scenarios": {
     "title": "Career Adventure",
@@ -66,7 +66,7 @@
   },
   "careers": {
     "title": "All careers",
-    "count": "33 careers to explore",
+    "count": "31 careers to explore",
     "instructions": "Click on a career to see its full profile."
   },
   "profile": {
