@@ -62,11 +62,16 @@
     "viewOnOrientation": "Auf berufsberatung.ch ansehen",
     "flipHint": "Klicke für Details",
     "flipBack": "Karte umdrehen",
-    "yearN": "{n}. Jahr"
+    "yearN": "{n}. Jahr",
+    "formation": "Ausbildung",
+    "perspectives": "Berufliche Perspektiven",
+    "otherInfo": "Weitere Informationen",
+    "usefulAddresses": "Nützliche Adressen",
+    "domain": "Berufsfeld"
   },
   "careers": {
     "title": "Alle Berufe",
-    "count": "31 Berufe zu entdecken",
+    "count": "Berufe zu entdecken",
     "instructions": "Klicke auf einen Beruf, um sein vollständiges Profil zu sehen."
   },
   "profile": {

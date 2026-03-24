@@ -98,15 +98,17 @@ export function FlipCard({ career }: { career: CareerDetail }) {
           )}
 
           {/* Link */}
-          <a
-            href={career.urlOrientation}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="link-orientation"
-            onClick={(e) => e.stopPropagation()}
-          >
-            Voir sur orientation.ch →
-          </a>
+          {career.urlOrientation && (
+            <a
+              href={career.urlOrientation}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="link-orientation"
+              onClick={(e) => e.stopPropagation()}
+            >
+              Voir sur orientation.ch →
+            </a>
+          )}
 
           <div className="flip-hint" style={{ marginTop: 12 }}>
             ↻ Retourner la carte

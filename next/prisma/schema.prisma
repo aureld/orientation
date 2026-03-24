@@ -30,12 +30,14 @@ model SectorTranslation {
 // ─── Professions ───────────────────────────────────────
 
 model Profession {
-  id       String @id // e.g. "assc", "informaticien"
-  sectorId String
-  type     String // "CFC", "AFP", "CFC+"
-  duration Int    // years
-  icon     String
-  urlOrientation String
+  id       String  @id // e.g. "assc", "informaticien" or slug from name
+  sectorId String? // nullable for imported professions without sector mapping yet
+  type     String  // "CFC", "AFP", "CFC+"
+  duration Int     // years
+  icon     String  @default("💼")
+  urlOrientation String? // kept for backward compat; canonical URLs are in ProfessionTranslation
+  swissdoc      String? @unique // e.g. "0.561.28.0" — stable cross-locale ID from orientation.ch
+  swissdocGroup String? // main group code: "100","200",..."800" — derived from swissdoc bloc 2
 
   // 12-dimension profile (0-10 scale)
   manuel        Int @default(0)
@@ -51,7 +53,7 @@ model Profession {
   routine       Int @default(0)
   variete       Int @default(0)
 
-  sector       Sector @relation(fields: [sectorId], references: [id])
+  sector       Sector? @relation(fields: [sectorId], references: [id])
   translations ProfessionTranslation[]
   salaries     SalaryInfo[]
   scenarioLinks ScenarioEndProfession[]
@@ -62,11 +64,22 @@ model ProfessionTranslation {
   professionId String
   locale       String
 
+  // Game-facing short data (hand-curated)
   name         String // "Assistant/e en soins et santé communautaire CFC"
-  description  String
-  activities   String[] // array of daily activities
-  qualities    String[] // required qualities
-  passerelle   String?  // optional aeronautics pathway info
+  description  String @default("") // short game description
+  activities   String[] // array of daily activities (curated)
+  qualities    String[] // required qualities (curated)
+  passerelle   String?  // optional pathway info
+
+  // Full orientation.ch content (scraped, exact text)
+  orientationUrl             String? // locale-specific URL on orientation.ch
+  orientationId              String? // locale-specific ID on orientation.ch
+  domainesProfessionnels     String? // e.g. "Informatique, multimédia - Médias et communication"
+  descriptionFull            String? // full description section
+  formation                  String? // training details
+  perspectivesProfessionnelles String? // career prospects
+  autresInformations         String? // qualities, interests, related professions
+  adressesUtiles             String? // useful addresses/contacts
 
   profession Profession @relation(fields: [professionId], references: [id])
 

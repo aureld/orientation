@@ -1,113 +1,115 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-// Mock the prisma client before importing the module under test
 vi.mock("@/lib/db", () => ({
   prisma: {
-    sector: {
+    profession: {
       findMany: vi.fn(),
     },
   },
 }));
 
-import { getCareersGroupedBySector } from "../careers";
+import { getAllCareers } from "../careers";
 import { prisma } from "@/lib/db";
 
-const mockFindMany = vi.mocked(prisma.sector.findMany);
+const mockFindMany = vi.mocked(prisma.profession.findMany);
 
-/** Helper to build a mock sector row from Prisma */
-function mockSector(
-  id: string,
-  sectorTranslations: { name: string }[],
-  professions: {
-    id: string;
-    icon: string;
-    type: string;
-    duration: number;
-    translations: { name: string }[];
-  }[]
-) {
+function mockProfession(overrides: {
+  id: string;
+  swissdocGroup?: string | null;
+  name?: string;
+  icon?: string;
+  type?: string;
+  duration?: number;
+}) {
   return {
-    id,
-    color: `--color-${id}`,
-    translations: sectorTranslations,
-    professions: professions.map((p) => ({
-      ...p,
-      urlOrientation: "https://example.com",
-      sectorId: id,
-      manuel: 0, intellectuel: 0, creatif: 0, analytique: 0,
-      interieur: 0, exterieur: 0, equipe: 0, independant: 0,
-      contactHumain: 0, technique: 0, routine: 0, variete: 0,
-    })),
+    id: overrides.id,
+    sectorId: null,
+    type: overrides.type ?? "CFC",
+    duration: overrides.duration ?? 3,
+    icon: overrides.icon ?? "💼",
+    urlOrientation: null,
+    swissdoc: null,
+    swissdocGroup: overrides.swissdocGroup ?? null,
+    manuel: 0, intellectuel: 0, creatif: 0, analytique: 0,
+    interieur: 0, exterieur: 0, equipe: 0, independant: 0,
+    contactHumain: 0, technique: 0, routine: 0, variete: 0,
+    translations: overrides.name ? [{ name: overrides.name }] : [],
   };
 }
 
-describe("getCareersGroupedBySector", () => {
+describe("getAllCareers", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("returns professions grouped by sector with sector name", async () => {
+  it("returns professions grouped by swissdocGroup", async () => {
     mockFindMany.mockResolvedValue([
-      mockSector("sante", [{ name: "Santé" }], [
-        { id: "assc", icon: "🏥", type: "CFC", duration: 3, translations: [{ name: "ASSC" }] },
-      ]),
+      mockProfession({ id: "informaticien", swissdocGroup: "500", name: "Informaticien CFC" }),
+      mockProfession({ id: "cuisinier", swissdocGroup: "200", name: "Cuisinier CFC" }),
+      mockProfession({ id: "automaticien", swissdocGroup: "500", name: "Automaticien CFC" }),
     ] as never);
 
-    const result = await getCareersGroupedBySector("fr");
+    const result = await getAllCareers("fr");
 
-    expect(result).toEqual([
-      {
-        sectorId: "sante",
-        sectorName: "Santé",
-        professions: [
-          { id: "assc", icon: "🏥", type: "CFC", duration: 3, name: "ASSC" },
-        ],
-      },
+    expect(result.total).toBe(3);
+    expect(result.groups).toHaveLength(2);
+    // Groups follow canonical order (200 before 500)
+    expect(result.groups[0].groupCode).toBe("200");
+    expect(result.groups[0].professions).toHaveLength(1);
+    expect(result.groups[1].groupCode).toBe("500");
+    expect(result.groups[1].professions).toHaveLength(2);
+  });
+
+  it("sorts groups in canonical swissdoc order (100 → 800)", async () => {
+    mockFindMany.mockResolvedValue([
+      mockProfession({ id: "a", swissdocGroup: "800", name: "A" }),
+      mockProfession({ id: "b", swissdocGroup: "100", name: "B" }),
+      mockProfession({ id: "c", swissdocGroup: "400", name: "C" }),
+    ] as never);
+
+    const result = await getAllCareers("fr");
+
+    expect(result.groups.map((g) => g.groupCode)).toEqual(["100", "400", "800"]);
+  });
+
+  it("sorts professions alphabetically by name within each group", async () => {
+    mockFindMany.mockResolvedValue([
+      mockProfession({ id: "z", swissdocGroup: "500", name: "Zingueur CFC" }),
+      mockProfession({ id: "a", swissdocGroup: "500", name: "Automaticien CFC" }),
+    ] as never);
+
+    const result = await getAllCareers("fr");
+
+    expect(result.groups[0].professions.map((p) => p.name)).toEqual([
+      "Automaticien CFC",
+      "Zingueur CFC",
     ]);
   });
 
-  it("filters out sectors with no professions", async () => {
+  it("uses swissdoc group labels as domain names", async () => {
     mockFindMany.mockResolvedValue([
-      mockSector("sante", [{ name: "Santé" }], [
-        { id: "assc", icon: "🏥", type: "CFC", duration: 3, translations: [{ name: "ASSC" }] },
-      ]),
-      mockSector("vide", [{ name: "Vide" }], []),
+      mockProfession({ id: "a", swissdocGroup: "100", name: "Agriculteur CFC" }),
     ] as never);
 
-    const result = await getCareersGroupedBySector("fr");
+    const result = await getAllCareers("fr");
 
-    expect(result).toHaveLength(1);
-    expect(result[0].sectorId).toBe("sante");
+    expect(result.groups[0].domain).toBe("Nature");
   });
 
-  it("falls back to profession id when no profession translation exists", async () => {
+  it("falls back to profession id when no translation exists", async () => {
     mockFindMany.mockResolvedValue([
-      mockSector("sante", [{ name: "Gesundheit" }], [
-        { id: "assc", icon: "🏥", type: "CFC", duration: 3, translations: [] },
-      ]),
+      mockProfession({ id: "some-prof", swissdocGroup: "400" }),
     ] as never);
 
-    const result = await getCareersGroupedBySector("de");
+    const result = await getAllCareers("fr");
 
-    expect(result[0].professions[0].name).toBe("assc");
+    expect(result.groups[0].professions[0].name).toBe("some-prof");
   });
 
-  it("falls back to sector id when no sector translation exists", async () => {
-    mockFindMany.mockResolvedValue([
-      mockSector("sante", [], [
-        { id: "assc", icon: "🏥", type: "CFC", duration: 3, translations: [{ name: "ASSC" }] },
-      ]),
-    ] as never);
-
-    const result = await getCareersGroupedBySector("fr");
-
-    expect(result[0].sectorName).toBe("sante");
-  });
-
-  it("queries sector translations filtered by locale", async () => {
+  it("queries professions with translations filtered by locale", async () => {
     mockFindMany.mockResolvedValue([] as never);
 
-    await getCareersGroupedBySector("de");
+    await getAllCareers("de");
 
     expect(mockFindMany).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -115,26 +117,7 @@ describe("getCareersGroupedBySector", () => {
           translations: expect.objectContaining({
             where: { locale: "de" },
           }),
-          professions: expect.objectContaining({
-            include: expect.objectContaining({
-              translations: expect.objectContaining({
-                where: { locale: "de" },
-              }),
-            }),
-          }),
         }),
-      })
-    );
-  });
-
-  it("orders sectors by id ascending", async () => {
-    mockFindMany.mockResolvedValue([] as never);
-
-    await getCareersGroupedBySector("fr");
-
-    expect(mockFindMany).toHaveBeenCalledWith(
-      expect.objectContaining({
-        orderBy: { id: "asc" },
       })
     );
   });

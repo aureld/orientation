@@ -37,6 +37,14 @@ function mockProfession(overrides: Record<string, unknown> = {}) {
         activities: ["Soins de base", "Prise de tension"],
         qualities: ["Empathie", "Rigueur"],
         passerelle: null,
+        orientationUrl: null,
+        orientationId: null,
+        domainesProfessionnels: "Médecine, santé",
+        descriptionFull: "Full description from orientation.ch",
+        formation: "Formation details",
+        perspectivesProfessionnelles: "Perspectives details",
+        autresInformations: "Autres infos",
+        adressesUtiles: "Adresses",
       },
     ],
     salaries: [
@@ -99,6 +107,12 @@ describe("getCareerById", () => {
         interieur: 8, exterieur: 2, equipe: 9, independant: 1,
         contactHumain: 10, technique: 4, routine: 5, variete: 5,
       },
+      domainesProfessionnels: "Médecine, santé",
+      descriptionFull: "Full description from orientation.ch",
+      formation: "Formation details",
+      perspectivesProfessionnelles: "Perspectives details",
+      autresInformations: "Autres infos",
+      adressesUtiles: "Adresses",
     });
   });
 

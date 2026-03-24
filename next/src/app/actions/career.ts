@@ -9,13 +9,13 @@ export interface CareerDetail {
   icon: string;
   type: string;
   duration: number;
-  urlOrientation: string;
+  urlOrientation: string | null;
   name: string;
   description: string;
   activities: string[];
   qualities: string[];
   passerelle: string | null;
-  sectorId: string;
+  sectorId: string | null;
   sectorName: string;
   sectorColor: string;
   salary: {
@@ -24,6 +24,13 @@ export interface CareerDetail {
     postCfcMax: number;
   } | null;
   profile: ProfileVector;
+  // Full orientation.ch content
+  domainesProfessionnels: string | null;
+  descriptionFull: string | null;
+  formation: string | null;
+  perspectivesProfessionnelles: string | null;
+  autresInformations: string | null;
+  adressesUtiles: string | null;
 }
 
 export async function getCareerById(
@@ -70,18 +77,24 @@ export async function getCareerById(
     icon: profession.icon,
     type: profession.type,
     duration: profession.duration,
-    urlOrientation: profession.urlOrientation,
+    urlOrientation: profession.urlOrientation ?? t?.orientationUrl ?? null,
     name: t?.name ?? profession.id,
     description: t?.description ?? "",
     activities: t?.activities ?? [],
     qualities: t?.qualities ?? [],
     passerelle: t?.passerelle ?? null,
     sectorId: profession.sectorId,
-    sectorName: profession.sector.translations[0]?.name ?? profession.sectorId,
-    sectorColor: profession.sector.color,
+    sectorName: profession.sector?.translations[0]?.name ?? profession.sectorId ?? "",
+    sectorColor: profession.sector?.color ?? "",
     salary: sal
       ? { apprenticeYears, postCfcMin: sal.postCfcMin, postCfcMax: sal.postCfcMax }
       : null,
     profile,
+    domainesProfessionnels: t?.domainesProfessionnels ?? null,
+    descriptionFull: t?.descriptionFull ?? null,
+    formation: t?.formation ?? null,
+    perspectivesProfessionnelles: t?.perspectivesProfessionnelles ?? null,
+    autresInformations: t?.autresInformations ?? null,
+    adressesUtiles: t?.adressesUtiles ?? null,
   };
 }

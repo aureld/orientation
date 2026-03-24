@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { HeaderBar } from "@/components/header-bar";
 import { getCareerById } from "@/app/actions/career";
-import { FlipCard } from "@/components/flip-card";
+import { CareerDetailView } from "@/components/career-detail";
 
 export default async function CareerPage({
   params,
@@ -21,7 +21,7 @@ export default async function CareerPage({
     <div className="animate-fade-in mx-auto max-w-2xl px-4 pb-12">
       <HeaderBar title={t("title")} showBack />
       <div className="mt-6">
-        <FlipCard career={career} />
+        <CareerDetailView career={career} />
       </div>
     </div>
   );

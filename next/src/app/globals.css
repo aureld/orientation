@@ -473,3 +473,110 @@ body {
   font-weight: 800;
   color: #27ae60;
 }
+
+/* ─── Career detail view ───────────────────────────── */
+
+.career-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.career-detail-header {
+  text-align: center;
+  padding: 1.5rem 0;
+}
+
+.career-detail-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.career-detail-name {
+  font-size: 1.4rem;
+  font-weight: 800;
+  line-height: 1.3;
+  margin-bottom: 0.75rem;
+}
+
+.career-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.career-badge {
+  background: var(--color-accent);
+  color: white;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.career-domain {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+}
+
+.career-section {
+  background: var(--color-surface);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  border: 1px solid var(--color-border);
+}
+
+.career-section h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  color: var(--color-accent);
+}
+
+.career-heading {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-top: 1rem;
+  margin-bottom: 0.4rem;
+}
+
+.career-subheading {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 0.75rem;
+  margin-bottom: 0.3rem;
+  color: var(--color-muted);
+}
+
+.career-text {
+  font-size: 0.88rem;
+  line-height: 1.6;
+  margin-bottom: 0.4rem;
+}
+
+.career-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.3rem 0;
+}
+
+.career-list li {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  padding-left: 1.2rem;
+  position: relative;
+  margin-bottom: 0.2rem;
+}
+
+.career-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--color-accent);
+  font-weight: bold;
+}

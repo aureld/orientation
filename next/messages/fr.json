@@ -22,7 +22,7 @@
     "about": "À propos",
     "reset": "Recommencer",
     "resetConfirm": "Tu es sûr ? Toute ta progression sera effacée.",
-    "aboutText": "Aventure Métier — Un jeu d'orientation professionnelle basé sur les données de orientation.ch.\n\nConçu pour les jeunes du Canton de Zurich.\n\n31 métiers suisses réels (CFC/AFP)\n11 scénarios immersifs\n\nBonne exploration !"
+    "aboutText": "Aventure Métier — Un jeu d'orientation professionnelle basé sur les données de orientation.ch.\n\nConçu pour les jeunes du Canton de Zurich.\n\n187 métiers suisses réels (CFC)\n11 scénarios immersifs\n\nBonne exploration !"
   },
   "scenarios": {
     "title": "Aventure Métier",
@@ -62,11 +62,16 @@
     "viewOnOrientation": "Voir sur orientation.ch",
     "flipHint": "Clique pour voir les détails",
     "flipBack": "Retourner la carte",
-    "yearN": "{n}e année"
+    "yearN": "{n}e année",
+    "formation": "Formation",
+    "perspectives": "Perspectives professionnelles",
+    "otherInfo": "Autres informations",
+    "usefulAddresses": "Adresses utiles",
+    "domain": "Domaine"
   },
   "careers": {
     "title": "Tous les métiers",
-    "count": "31 métiers à explorer",
+    "count": "métiers à explorer",
     "instructions": "Clique sur un métier pour découvrir sa fiche complète."
   },
   "profile": {

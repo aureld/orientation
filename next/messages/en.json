@@ -62,11 +62,16 @@
     "viewOnOrientation": "View on orientation.ch",
     "flipHint": "Click to see details",
     "flipBack": "Flip the card",
-    "yearN": "Year {n}"
+    "yearN": "Year {n}",
+    "formation": "Training",
+    "perspectives": "Career prospects",
+    "otherInfo": "Other information",
+    "usefulAddresses": "Useful addresses",
+    "domain": "Professional field"
   },
   "careers": {
     "title": "All careers",
-    "count": "31 careers to explore",
+    "count": "careers to explore",
     "instructions": "Click on a career to see its full profile."
   },
   "profile": {

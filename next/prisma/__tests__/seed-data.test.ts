@@ -2,115 +2,256 @@ import { describe, it, expect } from "vitest";
 import { readFileSync } from "fs";
 import { resolve } from "path";
 
+const VALID_SECTORS = [
+  "sante", "informatique", "commerce", "construction",
+  "technique", "artisanat", "gastronomie", "nature",
+  "social", "automobile", "aeronautique",
+];
+
+const VALID_DIMENSIONS = [
+  "manuel", "intellectuel", "creatif", "analytique",
+  "interieur", "exterieur", "equipe", "independant",
+  "contactHumain", "technique", "routine", "variete",
+];
+
+function slugify(name: string): string {
+  let slug = name.split(/\s+CFC/)[0].trim();
+  slug = slug.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  slug = slug.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  return slug;
+}
+
+interface ScrapedProfession {
+  name: string;
+  url: string;
+  orientationId: string;
+  swissdoc: string;
+  description: string;
+  formation: string;
+}
+
 /**
- * We parse the seed file to extract professions data for validation.
- * This avoids importing it (which would trigger DB connections).
+ * Load professions from the scraped JSON and scenarios from seed.ts.
  */
-function parseSeedProfessions() {
+function loadData() {
+  // Load professions from scraped JSON
+  const jsonPath = resolve(__dirname, "../../scripts/output/professions-cfc.json");
+  const scrapedData: ScrapedProfession[] = JSON.parse(readFileSync(jsonPath, "utf-8"));
+  const professions = scrapedData.map((p) => ({
+    id: slugify(p.name),
+    name: p.name,
+    swissdoc: p.swissdoc,
+    url: p.url,
+  }));
+
+  // Parse scenarios from seed.ts
   const seedPath = resolve(__dirname, "../seed.ts");
   const content = readFileSync(seedPath, "utf-8");
 
-  // Extract the professions array using a regex approach
-  const professionsMatch = content.match(
-    /const professions = \[([\s\S]*?)\n\];/
+  const scenariosMatch = content.match(
+    /const scenarios = \[([\s\S]*?)\n\];/
   );
-  if (!professionsMatch) throw new Error("Could not find professions array in seed.ts");
 
-  // Extract individual profession objects — look for urlOrientation, id, name, duration, type
-  const professions: {
-    id: string;
-    urlOrientation: string;
-    name: string;
-    duration: number;
-    type: string;
-    sectorId: string;
-  }[] = [];
-
-  const idPattern = /id:\s*"([^"]+)"/g;
-  const urlPattern = /urlOrientation:\s*"([^"]+)"/g;
-  const namePattern = /name:\s*"([^"]+)"/g;
-  const durationPattern = /duration:\s*(\d+)/g;
-  const typePattern = /type:\s*"([^"]+)"/g;
-  const sectorPattern = /sectorId:\s*"([^"]+)"/g;
-
-  const raw = professionsMatch[1];
-  const ids = [...raw.matchAll(idPattern)].map((m) => m[1]);
-  const urls = [...raw.matchAll(urlPattern)].map((m) => m[1]);
-  const names = [...raw.matchAll(namePattern)].map((m) => m[1]);
-  const durations = [...raw.matchAll(durationPattern)].map((m) => Number(m[1]));
-  const types = [...raw.matchAll(typePattern)].map((m) => m[1]);
-  const sectors = [...raw.matchAll(sectorPattern)].map((m) => m[1]);
-
-  for (let i = 0; i < ids.length; i++) {
-    professions.push({
-      id: ids[i],
-      urlOrientation: urls[i],
-      name: names[i],
-      duration: durations[i],
-      type: types[i],
-      sectorId: sectors[i],
-    });
+  interface ParsedScene {
+    sceneKey: string;
+    isFinal: boolean;
+    resumeProfessions: string[];
+    choices: { suite: string | null; tagKeys: string[] }[];
   }
 
-  return professions;
+  interface ParsedScenario {
+    id: string;
+    sectorId: string;
+    scenes: ParsedScene[];
+  }
+
+  const scenarios: ParsedScenario[] = [];
+
+  if (scenariosMatch) {
+    const scenRaw = scenariosMatch[1];
+    const scenarioBlocks = scenRaw.split(/\n  \{[\s\n]*id:/);
+    for (const block of scenarioBlocks) {
+      const idMatch = block.match(/^\s*"([^"]+)"/);
+      if (!idMatch) continue;
+      const id = idMatch[1];
+      const sectorMatch = block.match(/sectorId:\s*"([^"]+)"/);
+      const sectorId = sectorMatch?.[1] ?? "";
+
+      const scenes: ParsedScene[] = [];
+      const sceneBlocks = block.split(/\{\s*sceneKey:\s*"/);
+      for (const sceneBlock of sceneBlocks.slice(1)) {
+        const keyMatch = sceneBlock.match(/^([^"]+)"/);
+        if (!keyMatch) continue;
+        const sceneKey = keyMatch[1];
+        const isFinal = /isFinal:\s*true/.test(sceneBlock);
+        const resumeMatch = sceneBlock.match(/resumeProfessions:\s*\[([^\]]*)\]/);
+        const resumeProfessions = resumeMatch
+          ? [...resumeMatch[1].matchAll(/"([^"]+)"/g)].map((m) => m[1])
+          : [];
+
+        const choices: { suite: string | null; tagKeys: string[] }[] = [];
+        const choiceBlocks = sceneBlock.split(/\{\s*text:/);
+        for (const choiceBlock of choiceBlocks.slice(1)) {
+          const suiteMatch = choiceBlock.match(/nextSceneKey:\s*"([^"]+)"/);
+          const tagMatches = [
+            ...choiceBlock.matchAll(/(manuel|intellectuel|creatif|analytique|interieur|exterieur|equipe|independant|contactHumain|technique|routine|variete):\s*\d/g),
+          ];
+          choices.push({
+            suite: suiteMatch?.[1] ?? null,
+            tagKeys: tagMatches.map((m) => m[1]),
+          });
+        }
+
+        scenes.push({ sceneKey, isFinal, resumeProfessions, choices });
+      }
+
+      scenarios.push({ id, sectorId, scenes });
+    }
+  }
+
+  return { professions, scenarios, professionIds: new Set(professions.map((p) => p.id)) };
 }
 
-describe("seed data integrity", () => {
-  const professions = parseSeedProfessions();
+const { professions, scenarios, professionIds } = loadData();
 
-  it("parses all professions from seed file", () => {
-    expect(professions.length).toBeGreaterThan(0);
+// ─── Profession tests ──────────────────────────────────
+
+describe("seed data: professions (from scraped JSON)", () => {
+  it("loads all professions from JSON", () => {
+    expect(professions.length).toBe(187);
   });
 
   it("has no duplicate profession IDs", () => {
     const ids = professions.map((p) => p.id);
-    const unique = new Set(ids);
     const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i);
     expect(duplicates).toEqual([]);
-    expect(unique.size).toBe(ids.length);
+  });
+
+  it("has no duplicate swissdoc codes", () => {
+    const codes = professions.map((p) => p.swissdoc);
+    const duplicates = codes.filter((c, i) => codes.indexOf(c) !== i);
+    expect(duplicates).toEqual([]);
   });
 
   it("has no duplicate orientation.ch URLs", () => {
-    const urlMap = new Map<string, string[]>();
-    for (const p of professions) {
-      const ids = urlMap.get(p.urlOrientation) ?? [];
-      ids.push(p.id);
-      urlMap.set(p.urlOrientation, ids);
-    }
-    const duplicates = [...urlMap.entries()]
-      .filter(([, ids]) => ids.length > 1)
-      .map(([url, ids]) => `${url} used by: ${ids.join(", ")}`);
+    const urls = professions.map((p) => p.url);
+    const duplicates = urls.filter((u, i) => urls.indexOf(u) !== i);
     expect(duplicates).toEqual([]);
   });
 
-  it("every profession references a valid sector", () => {
-    const validSectors = [
-      "sante", "informatique", "commerce", "construction",
-      "technique", "artisanat", "gastronomie", "nature",
-      "social", "automobile", "aeronautique",
-    ];
+  it("every profession name includes CFC", () => {
     for (const p of professions) {
-      expect(validSectors, `${p.id} has invalid sector "${p.sectorId}"`).toContain(p.sectorId);
+      expect(p.name, `${p.id}: "${p.name}"`).toContain("CFC");
+    }
+  });
+});
+
+// ─── Scenario tests ────────────────────────────────────
+
+describe("seed data: scenarios", () => {
+  it("parses all scenarios from seed file", () => {
+    expect(scenarios.length).toBe(11);
+  });
+
+  it("has no duplicate scenario IDs", () => {
+    const ids = scenarios.map((s) => s.id);
+    const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i);
+    expect(duplicates).toEqual([]);
+  });
+
+  it("every scenario references a valid sector", () => {
+    for (const s of scenarios) {
+      expect(VALID_SECTORS, `scenario "${s.id}" → "${s.sectorId}"`).toContain(s.sectorId);
     }
   });
 
-  it("every profession has a valid type", () => {
-    const validTypes = ["CFC", "AFP"];
-    for (const p of professions) {
-      expect(validTypes, `${p.id} has invalid type "${p.type}"`).toContain(p.type);
+  it("every scenario has at least 3 scenes", () => {
+    for (const s of scenarios) {
+      expect(s.scenes.length, `scenario "${s.id}"`).toBeGreaterThanOrEqual(3);
     }
   });
 
-  it("every profession has a duration between 2 and 4 years", () => {
-    for (const p of professions) {
-      expect(p.duration, `${p.id} has duration ${p.duration}`).toBeGreaterThanOrEqual(2);
-      expect(p.duration, `${p.id} has duration ${p.duration}`).toBeLessThanOrEqual(4);
+  it("every scenario has no duplicate scene keys", () => {
+    for (const s of scenarios) {
+      const keys = s.scenes.map((sc) => sc.sceneKey);
+      const duplicates = keys.filter((k, i) => keys.indexOf(k) !== i);
+      expect(duplicates, `scenario "${s.id}"`).toEqual([]);
     }
   });
 
-  it("every profession name includes the type suffix", () => {
-    for (const p of professions) {
-      expect(p.name, `${p.id} name "${p.name}" should include "${p.type}"`).toContain(p.type);
+  it("every scenario has at least one final scene", () => {
+    for (const s of scenarios) {
+      const finals = s.scenes.filter((sc) => sc.isFinal);
+      expect(finals.length, `scenario "${s.id}"`).toBeGreaterThanOrEqual(1);
     }
+  });
+
+  it("every final scene has resumeProfessions", () => {
+    for (const s of scenarios) {
+      for (const sc of s.scenes.filter((sc) => sc.isFinal)) {
+        expect(
+          sc.resumeProfessions.length,
+          `scenario "${s.id}" scene "${sc.sceneKey}"`
+        ).toBeGreaterThanOrEqual(1);
+      }
+    }
+  });
+
+  it("every resumeProfession references a valid profession ID", () => {
+    const invalid: string[] = [];
+    for (const s of scenarios) {
+      for (const sc of s.scenes) {
+        for (const profId of sc.resumeProfessions) {
+          if (!professionIds.has(profId)) {
+            invalid.push(`scenario "${s.id}" scene "${sc.sceneKey}" → "${profId}"`);
+          }
+        }
+      }
+    }
+    expect(invalid).toEqual([]);
+  });
+
+  it("every non-final scene has at least one choice", () => {
+    for (const s of scenarios) {
+      for (const sc of s.scenes.filter((sc) => !sc.isFinal)) {
+        expect(
+          sc.choices.length,
+          `scenario "${s.id}" scene "${sc.sceneKey}"`
+        ).toBeGreaterThanOrEqual(1);
+      }
+    }
+  });
+
+  it("every choice nextSceneKey references a valid scene within the scenario", () => {
+    const invalid: string[] = [];
+    for (const s of scenarios) {
+      const sceneKeys = new Set(s.scenes.map((sc) => sc.sceneKey));
+      for (const sc of s.scenes) {
+        for (const choice of sc.choices) {
+          if (choice.suite && !sceneKeys.has(choice.suite)) {
+            invalid.push(
+              `scenario "${s.id}" scene "${sc.sceneKey}" → nextSceneKey "${choice.suite}"`
+            );
+          }
+        }
+      }
+    }
+    expect(invalid).toEqual([]);
+  });
+
+  it("every choice tag uses a valid dimension name", () => {
+    const invalid: string[] = [];
+    for (const s of scenarios) {
+      for (const sc of s.scenes) {
+        for (const choice of sc.choices) {
+          for (const key of choice.tagKeys) {
+            if (!VALID_DIMENSIONS.includes(key)) {
+              invalid.push(`scenario "${s.id}" scene "${sc.sceneKey}" → tag "${key}"`);
+            }
+          }
+        }
+      }
+    }
+    expect(invalid).toEqual([]);
   });
 });
