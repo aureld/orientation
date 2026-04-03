@@ -150,7 +150,8 @@
       "weakPassword": "Password must be at least 6 characters",
       "emailTaken": "This email is already taken",
       "invalidCredentials": "Invalid email or password",
-      "passwordMismatch": "Passwords don't match"
+      "passwordMismatch": "Passwords don't match",
+      "noSession": "Start a game first to create an account"
     }
   }
 }

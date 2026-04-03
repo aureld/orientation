@@ -1,11 +1,20 @@
 "use server";
 
+import { cookies } from "next/headers";
+import { AuthError } from "next-auth";
 import { auth, signIn, signOut } from "@/infrastructure/auth";
 import { hashPassword } from "@/infrastructure/password";
 import {
   findUserByEmail,
   upgradeGuestToRegistered,
 } from "@/repositories/user-repository";
+
+async function getUserId(): Promise<string | null> {
+  const session = await auth();
+  if (session?.user?.id) return session.user.id;
+  const cookieStore = await cookies();
+  return cookieStore.get("userId")?.value ?? null;
+}
 
 export async function registerUser(
   email: string,
@@ -23,13 +32,13 @@ export async function registerUser(
     return { error: "emailTaken" };
   }
 
-  const session = await auth();
-  if (!session?.user?.id) {
+  const userId = await getUserId();
+  if (!userId) {
     return { error: "noSession" };
   }
 
   const hashed = await hashPassword(password);
-  await upgradeGuestToRegistered(session.user.id, email, hashed);
+  await upgradeGuestToRegistered(userId, email, hashed);
 
   return {};
 }
@@ -38,6 +47,23 @@ export async function loginUser(
   email: string,
   password: string
 ): Promise<{ error?: string }> {
+  if (!email || !password) {
+    return { error: "invalidCredentials" };
+  }
+
+  const user = await findUserByEmail(email);
+  if (!user || !user.passwordHash) {
+    console.warn(`[auth] login failed: no account for ${email}`);
+    return { error: "invalidCredentials" };
+  }
+
+  const { verifyPassword } = await import("@/infrastructure/password");
+  const valid = await verifyPassword(password, user.passwordHash);
+  if (!valid) {
+    console.warn(`[auth] login failed: wrong password for ${email}`);
+    return { error: "invalidCredentials" };
+  }
+
   try {
     await signIn("credentials", {
       email,
@@ -45,7 +71,14 @@ export async function loginUser(
       redirect: false,
     });
     return {};
-  } catch {
+  } catch (err) {
+    // CredentialsSignin is expected when authorize() returns null — not a real error
+    if (err instanceof AuthError && err.type === "CredentialsSignin") {
+      console.warn(`[auth] login failed: credentials rejected for ${email}`);
+      return { error: "invalidCredentials" };
+    }
+    // Unexpected errors (DB down, network issues) — log and surface
+    console.error(`[auth] unexpected signIn error for ${email}:`, err);
     return { error: "invalidCredentials" };
   }
 }

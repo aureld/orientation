@@ -150,7 +150,8 @@
       "weakPassword": "Das Passwort muss mindestens 6 Zeichen lang sein",
       "emailTaken": "Diese E-Mail-Adresse wird bereits verwendet",
       "invalidCredentials": "E-Mail oder Passwort falsch",
-      "passwordMismatch": "Die Passwörter stimmen nicht überein"
+      "passwordMismatch": "Die Passwörter stimmen nicht überein",
+      "noSession": "Starte zuerst ein Spiel, um ein Konto zu erstellen"
     }
   }
 }

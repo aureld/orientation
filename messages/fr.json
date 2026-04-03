@@ -150,7 +150,8 @@
       "weakPassword": "Le mot de passe doit faire au moins 6 caractères",
       "emailTaken": "Cette adresse email est déjà utilisée",
       "invalidCredentials": "Email ou mot de passe incorrect",
-      "passwordMismatch": "Les mots de passe ne correspondent pas"
+      "passwordMismatch": "Les mots de passe ne correspondent pas",
+      "noSession": "Commence une partie d'abord pour créer un compte"
     }
   }
 }

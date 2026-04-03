@@ -60,7 +60,7 @@ export default function HomePage() {
           className="btn btn-primary animate-pulse"
           disabled={isPending}
         >
-          {isPending ? t("loading", { defaultMessage: "..." }) : t("start")}
+          {isPending ? "..." : t("start")}
         </button>
       </div>
 
