@@ -346,3 +346,22 @@ model BadgeTranslation {
 
   @@unique([badgeId, locale])
 }
+
+// ─── Ingestion ────────────────────────────────────────
+
+model IngestionLog {
+  id          String    @id @default(cuid())
+  sourceId    String    // e.g. "orientation-ch"
+  locale      String    // e.g. "fr", "de", "en"
+  status      String    // "running", "completed", "failed"
+  scraped     Int       @default(0)
+  created     Int       @default(0)
+  updated     Int       @default(0)
+  embedded    Int       @default(0)
+  skipped     Int       @default(0)
+  error       String?
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  @@index([sourceId, locale])
+}
