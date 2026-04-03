@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { HeaderBar } from "@/components/header-bar";
+import { CareerSearch } from "@/components/career-search";
 import { getAllCareers } from "@/app/actions/careers";
 
 export default async function CareersPage({
@@ -23,6 +24,8 @@ export default async function CareersPage({
         {careers.total} {t("count")}
       </h2>
       <p className="text-muted">{t("instructions")}</p>
+
+      <CareerSearch locale={locale} />
 
       <div className="mt-6 space-y-8">
         {careers.groups.map((group) => (

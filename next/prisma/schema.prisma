@@ -81,6 +81,9 @@ model ProfessionTranslation {
   autresInformations         String? // qualities, interests, related professions
   adressesUtiles             String? // useful addresses/contacts
 
+  // Vector embedding (pgvector) — managed via $queryRaw, not Prisma client
+  embedding Unsupported("vector(1024)")?
+
   profession Profession @relation(fields: [professionId], references: [id])
 
   @@unique([professionId, locale])

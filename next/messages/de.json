@@ -67,12 +67,19 @@
     "perspectives": "Berufliche Perspektiven",
     "otherInfo": "Weitere Informationen",
     "usefulAddresses": "Nützliche Adressen",
-    "domain": "Berufsfeld"
+    "domain": "Berufsfeld",
+    "similarProfessions": "Ähnliche Berufe",
+    "similarDescription": "Diese Berufe teilen ähnliche Kompetenzen und Aktivitäten"
   },
   "careers": {
     "title": "Alle Berufe",
     "count": "Berufe zu entdecken",
-    "instructions": "Klicke auf einen Beruf, um sein vollständiges Profil zu sehen."
+    "instructions": "Klicke auf einen Beruf, um sein vollständiges Profil zu sehen.",
+    "search": "Beruf suchen",
+    "searchPlaceholder": "Z.B. mit Tieren arbeiten, Informatik, kreativ...",
+    "searchResults": "Ergebnisse für \"{query}\"",
+    "noResults": "Keine Berufe für diese Suche gefunden.",
+    "clearSearch": "Suche löschen"
   },
   "profile": {
     "title": "Mein Profil",

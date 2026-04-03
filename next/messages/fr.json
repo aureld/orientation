@@ -67,12 +67,19 @@
     "perspectives": "Perspectives professionnelles",
     "otherInfo": "Autres informations",
     "usefulAddresses": "Adresses utiles",
-    "domain": "Domaine"
+    "domain": "Domaine",
+    "similarProfessions": "Métiers similaires",
+    "similarDescription": "Ces métiers partagent des compétences et activités proches"
   },
   "careers": {
     "title": "Tous les métiers",
     "count": "métiers à explorer",
-    "instructions": "Clique sur un métier pour découvrir sa fiche complète."
+    "instructions": "Clique sur un métier pour découvrir sa fiche complète.",
+    "search": "Rechercher un métier",
+    "searchPlaceholder": "Ex: travailler avec des animaux, informatique, créatif...",
+    "searchResults": "Résultats pour \"{query}\"",
+    "noResults": "Aucun métier trouvé pour cette recherche.",
+    "clearSearch": "Effacer la recherche"
   },
   "profile": {
     "title": "Mon profil",

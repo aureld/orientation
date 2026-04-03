@@ -67,12 +67,19 @@
     "perspectives": "Career prospects",
     "otherInfo": "Other information",
     "usefulAddresses": "Useful addresses",
-    "domain": "Professional field"
+    "domain": "Professional field",
+    "similarProfessions": "Similar careers",
+    "similarDescription": "These careers share similar skills and activities"
   },
   "careers": {
     "title": "All careers",
     "count": "careers to explore",
-    "instructions": "Click on a career to see its full profile."
+    "instructions": "Click on a career to see its full profile.",
+    "search": "Search for a career",
+    "searchPlaceholder": "E.g. work with animals, IT, creative...",
+    "searchResults": "Results for \"{query}\"",
+    "noResults": "No careers found for this search.",
+    "clearSearch": "Clear search"
   },
   "profile": {
     "title": "My profile",

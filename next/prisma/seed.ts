@@ -711,6 +711,53 @@ async function main() {
   }
   console.log(`  ${scenarios.length} scenarios seeded.`);
 
+  // Generate embeddings (skip with GENERATE_EMBEDDINGS=false)
+  if (process.env.GENERATE_EMBEDDINGS !== "false") {
+    try {
+      const { composeEmbeddingText } = await import("../src/lib/embeddings/compose-text.js");
+      const { getEmbeddingProvider } = await import("../src/lib/embeddings/index.js");
+      const provider = getEmbeddingProvider();
+      console.log(`Generating embeddings (${provider.name})...`);
+
+      const translations = await prisma.professionTranslation.findMany({
+        where: { locale: "fr" },
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          activities: true,
+          qualities: true,
+          domainesProfessionnels: true,
+          descriptionFull: true,
+          autresInformations: true,
+        },
+      });
+
+      const texts = translations.map((t) => composeEmbeddingText(t));
+      const batchSize = 50;
+      let embedded = 0;
+
+      for (let i = 0; i < texts.length; i += batchSize) {
+        const batch = texts.slice(i, i + batchSize);
+        const ids = translations.slice(i, i + batchSize).map((t) => t.id);
+        const embeddings = await provider.embedBatch(batch);
+
+        for (let j = 0; j < ids.length; j++) {
+          const vectorStr = `[${embeddings[j].join(",")}]`;
+          await prisma.$executeRaw`
+            UPDATE "ProfessionTranslation"
+            SET embedding = ${vectorStr}::vector
+            WHERE id = ${ids[j]}
+          `;
+          embedded++;
+        }
+      }
+      console.log(`  ${embedded} embeddings generated.`);
+    } catch (e) {
+      console.warn("  Skipping embeddings (provider unavailable):", (e as Error).message);
+    }
+  }
+
   console.log("Seed complete!");
 }
 
