@@ -132,5 +132,25 @@
     "600": "Économie, Commerce, Transports",
     "700": "Santé, Social, Formation",
     "800": "Médias, Arts, Sciences humaines"
+  },
+  "auth": {
+    "login": "Connexion",
+    "register": "Créer un compte",
+    "email": "Email",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "loginButton": "Se connecter",
+    "registerButton": "S'inscrire",
+    "noAccount": "Pas encore de compte ?",
+    "hasAccount": "Déjà un compte ?",
+    "logout": "Déconnexion",
+    "guestBanner": "Crée un compte pour sauvegarder ta progression !",
+    "errors": {
+      "invalidEmail": "Adresse email invalide",
+      "weakPassword": "Le mot de passe doit faire au moins 6 caractères",
+      "emailTaken": "Cette adresse email est déjà utilisée",
+      "invalidCredentials": "Email ou mot de passe incorrect",
+      "passwordMismatch": "Les mots de passe ne correspondent pas"
+    }
   }
 }

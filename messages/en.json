@@ -132,5 +132,25 @@
     "600": "Economy, Commerce, Transport",
     "700": "Health, Social Work, Education",
     "800": "Media, Arts, Humanities"
+  },
+  "auth": {
+    "login": "Log in",
+    "register": "Create account",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "loginButton": "Log in",
+    "registerButton": "Sign up",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "logout": "Log out",
+    "guestBanner": "Create an account to save your progress!",
+    "errors": {
+      "invalidEmail": "Invalid email address",
+      "weakPassword": "Password must be at least 6 characters",
+      "emailTaken": "This email is already taken",
+      "invalidCredentials": "Invalid email or password",
+      "passwordMismatch": "Passwords don't match"
+    }
   }
 }

@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { DIMENSIONS, type ProfileVector } from "@/domain/profile";
+import { auth } from "@/infrastructure/auth";
 import { createAnonymousUser, findUserById, incrementUserProfile } from "@/repositories/user-repository";
 import {
   saveUserChoice,
@@ -10,6 +11,16 @@ import {
 } from "@/repositories/game-state-repository";
 
 const USER_COOKIE = "userId";
+
+async function getUserId(): Promise<string | null> {
+  // Auth.js session takes priority (registered users)
+  const session = await auth();
+  if (session?.user?.id) return session.user.id;
+
+  // Fall back to cookie (guest users)
+  const cookieStore = await cookies();
+  return cookieStore.get(USER_COOKIE)?.value ?? null;
+}
 
 export async function startGame(name: string): Promise<string> {
   const user = await createAnonymousUser(name.trim());
@@ -23,18 +34,13 @@ export async function startGame(name: string): Promise<string> {
   return user.id;
 }
 
-async function getUserIdFromCookie(): Promise<string | null> {
-  const cookieStore = await cookies();
-  return cookieStore.get(USER_COOKIE)?.value ?? null;
-}
-
 export async function saveChoice(
   scenarioId: string,
   sceneKey: string,
   choiceId: string,
   tags: ProfileVector
 ): Promise<void> {
-  const userId = await getUserIdFromCookie();
+  const userId = await getUserId();
   if (!userId) return;
 
   await saveUserChoice(userId, scenarioId, sceneKey, choiceId);
@@ -42,7 +48,7 @@ export async function saveChoice(
 }
 
 export async function completeScenario(scenarioId: string): Promise<void> {
-  const userId = await getUserIdFromCookie();
+  const userId = await getUserId();
   if (!userId) return;
 
   await markScenarioComplete(userId, scenarioId);
@@ -53,10 +59,11 @@ export interface UserProgressDTO {
   completedScenarioIds: string[];
   choiceCount: number;
   profile: ProfileVector;
+  isGuest: boolean;
 }
 
 export async function getUserGameState(): Promise<UserProgressDTO | null> {
-  const userId = await getUserIdFromCookie();
+  const userId = await getUserId();
   if (!userId) return null;
 
   const user = await findUserById(userId);
@@ -74,5 +81,6 @@ export async function getUserGameState(): Promise<UserProgressDTO | null> {
     completedScenarioIds: progress.completedScenarioIds,
     choiceCount: progress.choiceCount,
     profile,
+    isGuest: user.isGuest,
   };
 }

@@ -38,3 +38,20 @@ export function decrementUserProfile(id: string, tags: ProfileVector) {
     data: decrements,
   });
 }
+
+export function findUserByEmail(email: string) {
+  return prisma.user.findUnique({
+    where: { email },
+  });
+}
+
+export function upgradeGuestToRegistered(
+  id: string,
+  email: string,
+  passwordHash: string
+) {
+  return prisma.user.update({
+    where: { id },
+    data: { email, passwordHash, isGuest: false },
+  });
+}

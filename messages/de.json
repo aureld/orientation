@@ -132,5 +132,25 @@
     "600": "Wirtschaft, Handel, Verkehr",
     "700": "Gesundheit, Soziales, Bildung",
     "800": "Medien, Kunst, Geisteswissenschaften"
+  },
+  "auth": {
+    "login": "Anmelden",
+    "register": "Konto erstellen",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "loginButton": "Anmelden",
+    "registerButton": "Registrieren",
+    "noAccount": "Noch kein Konto?",
+    "hasAccount": "Bereits ein Konto?",
+    "logout": "Abmelden",
+    "guestBanner": "Erstelle ein Konto, um deinen Fortschritt zu speichern!",
+    "errors": {
+      "invalidEmail": "Ungültige E-Mail-Adresse",
+      "weakPassword": "Das Passwort muss mindestens 6 Zeichen lang sein",
+      "emailTaken": "Diese E-Mail-Adresse wird bereits verwendet",
+      "invalidCredentials": "E-Mail oder Passwort falsch",
+      "passwordMismatch": "Die Passwörter stimmen nicht überein"
+    }
   }
 }

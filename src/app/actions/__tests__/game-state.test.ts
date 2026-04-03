@@ -10,6 +10,12 @@ vi.mock("next/headers", () => ({
   cookies: vi.fn(() => Promise.resolve(mockCookieStore)),
 }));
 
+// Mock Auth.js — returns null session by default (guest user)
+const mockAuth = vi.fn(() => Promise.resolve(null));
+vi.mock("@/infrastructure/auth", () => ({
+  auth: () => mockAuth(),
+}));
+
 vi.mock("@/repositories/user-repository", () => ({
   createAnonymousUser: vi.fn(),
   findUserById: vi.fn(),
