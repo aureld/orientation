@@ -122,5 +122,15 @@
     "social": "Social",
     "automobile": "Automotive",
     "aeronautique": "Aeronautics"
+  },
+  "swissdocGroups": {
+    "100": "Nature",
+    "200": "Food, Hospitality, Catering",
+    "300": "Textiles, Clothing, Personal Care",
+    "400": "Construction",
+    "500": "Industry, Engineering, IT",
+    "600": "Economy, Commerce, Transport",
+    "700": "Health, Social Work, Education",
+    "800": "Media, Arts, Humanities"
   }
 }

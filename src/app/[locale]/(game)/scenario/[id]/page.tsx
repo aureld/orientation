@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { getScenarioById } from "@/app/actions/scenarios";
-import { ScenarioPlayer } from "@/components/scenario-player";
+import { ScenarioPlayer } from "@/components/game/scenario-player";
 
 export default async function ScenarioPage({
   params,

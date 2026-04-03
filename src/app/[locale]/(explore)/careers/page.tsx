@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { HeaderBar } from "@/components/header-bar";
-import { CareerSearch } from "@/components/career-search";
+import { HeaderBar } from "@/components/layout/header-bar";
+import { CareerSearch } from "@/components/career/career-search";
 import { getAllCareers } from "@/app/actions/careers";
 
 export default async function CareersPage({
@@ -10,9 +10,10 @@ export default async function CareersPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  const [t, tc, careers] = await Promise.all([
+  const [t, tc, tGroups, careers] = await Promise.all([
     getTranslations("careers"),
     getTranslations("common"),
+    getTranslations("swissdocGroups"),
     getAllCareers(locale),
   ]);
 
@@ -31,7 +32,7 @@ export default async function CareersPage({
         {careers.groups.map((group) => (
           <section key={group.groupCode}>
             <h3 className="mb-3 text-lg font-bold">
-              {group.domain}
+              {tGroups.has(group.groupCode) ? tGroups(group.groupCode as "100") : group.domain}
               <span className="ml-2 text-sm font-normal text-muted">
                 ({group.professions.length})
               </span>

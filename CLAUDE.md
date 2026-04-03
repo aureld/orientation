@@ -49,41 +49,24 @@ npx tsx scripts/generate-embeddings.ts     # Generate vector embeddings for prof
 - **Tailwind CSS v4** (no `@apply` with custom classes — use plain CSS in `globals.css`)
 - **Vitest** + jsdom + Testing Library for tests
 
-### Key Directories
+### Layered Architecture
+
+The codebase follows a layered architecture with clear separation of concerns:
 
 ```
 src/
-├── app/
-│   ├── [locale]/              # All pages under locale segment
-│   │   ├── page.tsx           # Home
-│   │   ├── profile/           # User profile view
-│   │   ├── results/           # Match results
-│   │   ├── scenarios/         # Scenario list
-│   │   ├── scenario/[id]/     # Scenario player
-│   │   ├── careers/           # Career directory (grouped by Swissdoc domain)
-│   │   └── career/[id]/       # Career detail page
-│   ├── actions/               # Server Actions (no API routes — all data via actions)
-│   │   ├── career.ts          # getCareerById(id, locale)
-│   │   ├── careers.ts         # getAllCareers(locale) → grouped by Swissdoc domain
-│   │   ├── scenarios.ts       # getScenarioList, getScenarioById
-│   │   ├── semantic-search.ts # semanticSearch(query, locale, limit)
-│   │   └── similar-professions.ts # getSimilarProfessions via embeddings
-│   └── globals.css            # Tailwind + custom component styles
-├── components/                # Shared React components
-│   ├── career-detail.tsx      # Career detail view
-│   ├── career-search.tsx      # Career search/filter
-│   ├── flip-card.tsx          # Animated flip card
-│   ├── header-bar.tsx         # Top navigation
-│   ├── progress-bar.tsx       # Progress indicator
-│   ├── radar-chart.tsx        # 12-dimension radar visualization
-│   ├── scenario-player.tsx    # Scenario/choice UI
-│   ├── similar-professions.tsx # Similar profession recommendations
-│   └── theme-toggle.tsx       # Dark/light mode
-├── lib/                       # Core business logic
+├── domain/                    # Pure business logic (no I/O, no framework deps)
+│   ├── profile/               # 12 dimensions, radar pairs, types
+│   │   ├── dimensions.ts      # DIMENSIONS, RADAR_PAIRS, emptyProfile, types
+│   │   └── index.ts           # Re-exports
+│   └── matching/              # Career matching algorithms
+│       ├── cosine-similarity.ts  # getMatchScore, getTopMatches
+│       ├── radar.ts           # getRadarData for radar chart
+│       ├── hybrid-matcher.ts  # getHybridMatches (dimensions + semantic)
+│       └── index.ts           # Re-exports
+│
+├── infrastructure/            # External integrations and technical concerns
 │   ├── db.ts                  # Prisma client singleton (PrismaPg adapter)
-│   ├── matching.ts            # Cosine similarity matching engine
-│   ├── matching-hybrid.ts     # Hybrid matching: dimensions + semantic search
-│   ├── profile-dimensions.ts  # 12 dimensions definition, radar pairs, types
 │   └── embeddings/            # Vector embedding system
 │       ├── index.ts           # Provider factory (getEmbeddingProvider)
 │       ├── types.ts           # EmbeddingProvider interface
@@ -92,6 +75,57 @@ src/
 │       ├── vector-search.ts   # pgvector DB operations (store, search, similarity)
 │       ├── compose-text.ts    # Text composition for embedding input
 │       └── seed-embeddings.ts # Batch embedding generation
+│
+├── repositories/              # Data access layer (Prisma queries only)
+│   ├── profession-repository.ts  # findById, findAll, findByIds
+│   ├── scenario-repository.ts    # findAll, findById
+│   └── embedding-repository.ts   # Re-exports vector search operations
+│
+├── scrapers/                  # Data source scrapers (pluggable)
+│   ├── types.ts               # Scraper, ScrapedRecord interfaces
+│   ├── registry.ts            # ScraperRegistry singleton
+│   ├── index.ts               # Registers all scrapers
+│   └── orientation-ch/        # orientation.ch scraper
+│       ├── scraper.ts         # OrientationChScraper implementation
+│       └── types.ts           # OrientationChProfession type
+│
+├── app/
+│   ├── [locale]/
+│   │   ├── page.tsx           # Home
+│   │   ├── error.tsx          # Error boundary
+│   │   ├── loading.tsx        # Loading skeleton
+│   │   ├── (game)/            # Route group: game features
+│   │   │   ├── scenarios/     # Scenario list
+│   │   │   ├── scenario/[id]/ # Scenario player
+│   │   │   ├── results/       # Match results
+│   │   │   └── profile/       # User profile view
+│   │   └── (explore)/         # Route group: content exploration
+│   │       ├── careers/       # Career directory (grouped by Swissdoc)
+│   │       └── career/[id]/   # Career detail page
+│   ├── actions/               # Server Actions (thin: validate, delegate, return)
+│   │   ├── career.ts          # getCareerById → profession-repository
+│   │   ├── careers.ts         # getAllCareers → profession-repository
+│   │   ├── scenarios.ts       # getScenarioList, getScenarioById → scenario-repository
+│   │   ├── semantic-search.ts # semanticSearch → embedding-repository
+│   │   └── similar-professions.ts # getSimilarProfessions → embedding + profession repos
+│   └── globals.css            # Tailwind + custom component styles
+│
+├── components/                # UI components (feature-grouped)
+│   ├── layout/                # Page structure
+│   │   ├── header-bar.tsx     # Top navigation
+│   │   ├── progress-bar.tsx   # Progress indicator
+│   │   ├── theme-toggle.tsx   # Dark/light mode
+│   │   └── HtmlLang.tsx       # HTML lang attribute
+│   ├── game/                  # Game feature components
+│   │   ├── scenario-player.tsx # Scenario/choice UI
+│   │   ├── radar-chart.tsx    # 12-dimension radar visualization
+│   │   └── flip-card.tsx      # Animated flip card
+│   └── career/                # Career feature components
+│       ├── career-detail.tsx  # Career detail view
+│       ├── career-search.tsx  # Career search/filter
+│       └── similar-professions.tsx # Similar profession recommendations
+│
+├── lib/                       # Re-export shims (legacy, to be removed)
 ├── i18n/                      # Internationalization config
 │   ├── routing.ts             # Locales: ["fr", "de", "en"], default: "fr"
 │   ├── request.ts             # Per-request message loading
@@ -99,26 +133,34 @@ src/
 └── generated/prisma/          # Auto-generated Prisma client (do not edit)
 ```
 
+### Import Conventions
+
+- **Domain layer**: `@/domain/profile`, `@/domain/matching`
+- **Infrastructure**: `@/infrastructure/db`, `@/infrastructure/embeddings`
+- **Repositories**: `@/repositories/profession-repository`
+- **Components**: `@/components/layout/header-bar`, `@/components/game/radar-chart`
+- **Legacy `@/lib/*` paths**: Re-export shims exist for backward compatibility but should not be used for new code
+
 ### i18n Setup
 
 - Routing config: `src/i18n/routing.ts` — defines locales `["fr", "de", "en"]`, default `"fr"`
 - Request config: `src/i18n/request.ts` — loads messages per locale
 - Navigation helpers: `src/i18n/navigation.ts` — locale-aware `Link`, `useRouter`, `redirect`
 - Proxy: `proxy.ts` at project root (replaces `middleware.ts` in Next.js 16)
-- UI strings: `messages/{fr,de,en}.json`
+- UI strings: `messages/{fr,de,en}.json` — includes `swissdocGroups` for localized domain labels
 - DB content: translation tables per entity (ProfessionTranslation, ScenarioTranslation, etc.)
 
 ### Profile System
 
-12 dimensions (0-10 scale): `manuel`, `intellectuel`, `creatif`, `analytique`, `interieur`, `exterieur`, `equipe`, `independant`, `contactHumain`, `technique`, `routine`, `variete`. Stored both on User model and Profession model in Prisma. Matching uses cosine similarity (shape-based, magnitude-independent).
+12 dimensions (0-10 scale): `manuel`, `intellectuel`, `creatif`, `analytique`, `interieur`, `exterieur`, `equipe`, `independant`, `contactHumain`, `technique`, `routine`, `variete`. Defined in `src/domain/profile/dimensions.ts`. Stored both on User model and Profession model in Prisma. Matching uses cosine similarity (shape-based, magnitude-independent).
 
 ### Matching System
 
 Two matching approaches, combined in hybrid mode:
 
-1. **Cosine similarity** (`matching.ts`) — Compares 12-dimension profile vectors. Shape-based, magnitude-independent.
-2. **Semantic search** (`embeddings/vector-search.ts`) — pgvector cosine distance on profession text embeddings. Uses pluggable providers (Ollama bge-m3 at 1024 dims, or OpenAI text-embedding-3-small at 1536 dims).
-3. **Hybrid** (`matching-hybrid.ts`) — Blends dimension scores with semantic search scores using configurable weights.
+1. **Cosine similarity** (`domain/matching/cosine-similarity.ts`) — Compares 12-dimension profile vectors. Shape-based, magnitude-independent.
+2. **Semantic search** (`infrastructure/embeddings/vector-search.ts`) — pgvector cosine distance on profession text embeddings. Uses pluggable providers (Ollama bge-m3 at 1024 dims, or OpenAI text-embedding-3-small at 1536 dims).
+3. **Hybrid** (`domain/matching/hybrid-matcher.ts`) — Blends dimension scores with semantic search scores using configurable weights.
 
 ### Database Schema
 
@@ -135,8 +177,19 @@ Content is multilingual via `*Translation` tables (one per entity: Sector, Profe
 - **Vitest** with jsdom environment, globals enabled
 - Config: `vitest.config.ts` with `@` path alias to `src/`
 - Test files colocated in `__tests__/` directories alongside source
-- Mocking via `vi.mock()` for Prisma client and embedding providers
+- **Action tests** mock repositories (`@/repositories/*`), not Prisma directly
+- **Infrastructure tests** mock `@/infrastructure/db` for database operations
+- **Domain tests** are pure unit tests with no mocks needed
 - Coverage via `@vitest/coverage-v8`
+
+### Scraper System
+
+Data sources are pluggable via the `Scraper` interface (`src/scrapers/types.ts`). Each scraper:
+- Implements `scrape(locale, options)` returning `ScrapedRecord[]`
+- Is registered in `src/scrapers/registry.ts`
+- Lives in its own subdirectory (e.g., `src/scrapers/orientation-ch/`)
+
+To add a new data source: create a new scraper class, register it in `src/scrapers/index.ts`.
 
 ## TDD Development Rules
 

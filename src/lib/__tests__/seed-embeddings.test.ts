@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // Mock the DB module
-vi.mock("@/lib/db", () => ({
+vi.mock("@/infrastructure/db", () => ({
   prisma: {
     professionTranslation: {
       findMany: vi.fn(),
@@ -12,13 +12,13 @@ vi.mock("@/lib/db", () => ({
 }));
 
 // Mock the embedding provider
-vi.mock("@/lib/embeddings/index", () => ({
+vi.mock("@/infrastructure/embeddings", () => ({
   getEmbeddingProvider: vi.fn(),
 }));
 
-import { prisma } from "@/lib/db";
-import { getEmbeddingProvider } from "@/lib/embeddings/index";
-import { generateAndStoreEmbeddings } from "../embeddings/seed-embeddings";
+import { prisma } from "@/infrastructure/db";
+import { getEmbeddingProvider } from "@/infrastructure/embeddings";
+import { generateAndStoreEmbeddings } from "@/infrastructure/embeddings/seed-embeddings";
 
 const mockFindMany = vi.mocked(prisma.professionTranslation.findMany);
 const mockExecuteRaw = vi.mocked(prisma.$executeRaw);

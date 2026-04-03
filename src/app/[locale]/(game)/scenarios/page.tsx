@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { HeaderBar } from "@/components/header-bar";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { HeaderBar } from "@/components/layout/header-bar";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { getScenarioList } from "@/app/actions/scenarios";
 
 export default async function ScenariosPage({

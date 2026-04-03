@@ -1,29 +1,25 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-vi.mock("@/lib/db", () => ({
-  prisma: {
-    scenario: {
-      findMany: vi.fn(),
-      findUnique: vi.fn(),
-    },
-  },
+vi.mock("@/repositories/scenario-repository", () => ({
+  findAllScenarios: vi.fn(),
+  findScenarioById: vi.fn(),
 }));
 
 import { getScenarioList, getScenarioById } from "../scenarios";
-import { prisma } from "@/lib/db";
+import { findAllScenarios, findScenarioById } from "@/repositories/scenario-repository";
 
-const mockFindMany = vi.mocked(prisma.scenario.findMany);
-const mockFindUnique = vi.mocked(prisma.scenario.findUnique);
+const mockFindAllScenarios = vi.mocked(findAllScenarios);
+const mockFindScenarioById = vi.mocked(findScenarioById);
 
 describe("getScenarioList", () => {
   beforeEach(() => vi.clearAllMocks());
 
   it("returns all scenarios with title and description", async () => {
-    mockFindMany.mockResolvedValue([
+    mockFindAllScenarios.mockResolvedValue([
       {
-        id: "hopital", icon: "🏥", sectorId: "sante",
-        sector: { id: "sante", color: "--color-sante", translations: [{ name: "Santé" }] },
-        translations: [{ title: "Une journée à l'hôpital", description: "Découvre les coulisses..." }],
+        id: "hopital", icon: "\u{1F3E5}", sectorId: "sante",
+        sector: { id: "sante", color: "--color-sante", translations: [{ name: "Sant\u00e9" }] },
+        translations: [{ title: "Une journ\u00e9e \u00e0 l'h\u00f4pital", description: "D\u00e9couvre les coulisses..." }],
       },
     ] as never);
 
@@ -31,19 +27,19 @@ describe("getScenarioList", () => {
 
     expect(result).toEqual([{
       id: "hopital",
-      icon: "🏥",
+      icon: "\u{1F3E5}",
       sectorId: "sante",
-      sectorName: "Santé",
+      sectorName: "Sant\u00e9",
       sectorColor: "--color-sante",
-      title: "Une journée à l'hôpital",
-      description: "Découvre les coulisses...",
+      title: "Une journ\u00e9e \u00e0 l'h\u00f4pital",
+      description: "D\u00e9couvre les coulisses...",
     }]);
   });
 
   it("falls back to scenario id when no translation exists", async () => {
-    mockFindMany.mockResolvedValue([
+    mockFindAllScenarios.mockResolvedValue([
       {
-        id: "hopital", icon: "🏥", sectorId: "sante",
+        id: "hopital", icon: "\u{1F3E5}", sectorId: "sante",
         sector: { id: "sante", color: "--color-sante", translations: [] },
         translations: [],
       },
@@ -56,20 +52,12 @@ describe("getScenarioList", () => {
     expect(result[0].sectorName).toBe("sante");
   });
 
-  it("filters translations by locale", async () => {
-    mockFindMany.mockResolvedValue([] as never);
+  it("delegates to repository with locale", async () => {
+    mockFindAllScenarios.mockResolvedValue([] as never);
 
     await getScenarioList("de");
 
-    expect(mockFindMany).toHaveBeenCalledWith(
-      expect.objectContaining({
-        include: expect.objectContaining({
-          translations: expect.objectContaining({
-            where: { locale: "de" },
-          }),
-        }),
-      })
-    );
+    expect(mockFindAllScenarios).toHaveBeenCalledWith("de");
   });
 });
 
@@ -77,20 +65,20 @@ describe("getScenarioById", () => {
   beforeEach(() => vi.clearAllMocks());
 
   it("returns null when scenario is not found", async () => {
-    mockFindUnique.mockResolvedValue(null as never);
+    mockFindScenarioById.mockResolvedValue(null);
 
     const result = await getScenarioById("nonexistent", "fr");
     expect(result).toBeNull();
   });
 
   it("returns the full scenario with scenes and choices", async () => {
-    mockFindUnique.mockResolvedValue({
-      id: "hopital", icon: "🏥", sectorId: "sante",
-      translations: [{ title: "Une journée à l'hôpital", description: "Desc" }],
+    mockFindScenarioById.mockResolvedValue({
+      id: "hopital", icon: "\u{1F3E5}", sectorId: "sante",
+      translations: [{ title: "Une journ\u00e9e \u00e0 l'h\u00f4pital", description: "Desc" }],
       scenes: [
         {
           id: "scene-1", sceneKey: "arrivee", isFinal: false, sortOrder: 0,
-          translations: [{ text: "Tu arrives à l'hôpital." }],
+          translations: [{ text: "Tu arrives \u00e0 l'h\u00f4pital." }],
           choices: [
             {
               id: "choice-1", nextSceneKey: "urgences1", sortOrder: 0,
@@ -107,7 +95,7 @@ describe("getScenarioById", () => {
           translations: [{ text: "Fin des urgences." }],
           choices: [],
           endProfessions: [
-            { profession: { id: "assc", icon: "⚕️", type: "CFC", duration: 3, translations: [{ name: "ASSC" }] } },
+            { profession: { id: "assc", icon: "\u2695\uFE0F", type: "CFC", duration: 3, translations: [{ name: "ASSC" }] } },
           ],
         },
       ],
@@ -117,13 +105,13 @@ describe("getScenarioById", () => {
 
     expect(result).not.toBeNull();
     expect(result!.id).toBe("hopital");
-    expect(result!.title).toBe("Une journée à l'hôpital");
+    expect(result!.title).toBe("Une journ\u00e9e \u00e0 l'h\u00f4pital");
     expect(result!.scenes).toHaveLength(2);
 
     // First scene
     const scene0 = result!.scenes[0];
     expect(scene0.sceneKey).toBe("arrivee");
-    expect(scene0.text).toBe("Tu arrives à l'hôpital.");
+    expect(scene0.text).toBe("Tu arrives \u00e0 l'h\u00f4pital.");
     expect(scene0.isFinal).toBe(false);
     expect(scene0.choices).toHaveLength(1);
     expect(scene0.choices[0].text).toBe("Les urgences !");
@@ -134,7 +122,7 @@ describe("getScenarioById", () => {
     const scene1 = result!.scenes[1];
     expect(scene1.isFinal).toBe(true);
     expect(scene1.endProfessions).toEqual([
-      { id: "assc", icon: "⚕️", type: "CFC", duration: 3, name: "ASSC" },
+      { id: "assc", icon: "\u2695\uFE0F", type: "CFC", duration: 3, name: "ASSC" },
     ]);
   });
 });

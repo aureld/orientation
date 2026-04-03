@@ -3,10 +3,10 @@
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { Link } from "@/i18n/navigation";
-import { HeaderBar } from "@/components/header-bar";
-import { RadarChart } from "@/components/radar-chart";
-import { getRadarData } from "@/lib/matching";
-import { emptyProfile } from "@/lib/profile-dimensions";
+import { HeaderBar } from "@/components/layout/header-bar";
+import { RadarChart } from "@/components/game/radar-chart";
+import { getRadarData } from "@/domain/matching";
+import { emptyProfile } from "@/domain/profile";
 
 export default function ResultsPage() {
   const t = useTranslations("results");

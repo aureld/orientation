@@ -1,7 +1,7 @@
 "use server";
 
-import { getEmbeddingProvider } from "@/lib/embeddings/index";
-import { searchByVector, hasEmbeddings, distanceToScore } from "@/lib/embeddings/vector-search";
+import { getEmbeddingProvider } from "@/infrastructure/embeddings";
+import { searchByVector, hasEmbeddings, distanceToScore } from "@/repositories/embedding-repository";
 
 export interface SemanticSearchResult {
   id: string;

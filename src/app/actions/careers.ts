@@ -1,18 +1,6 @@
 "use server";
 
-import { prisma } from "@/lib/db";
-
-/** Swissdoc main group labels (FR) */
-const SWISSDOC_GROUP_LABELS: Record<string, string> = {
-  "100": "Nature",
-  "200": "Alimentation, Hôtellerie, Restauration",
-  "300": "Textiles, Habillement, Soins corporels",
-  "400": "Construction",
-  "500": "Industrie, Technique, Informatique",
-  "600": "Économie, Commerce, Transports",
-  "700": "Santé, Social, Formation",
-  "800": "Médias, Arts, Sciences humaines",
-};
+import { findAllProfessions } from "@/repositories/profession-repository";
 
 /** Canonical order for swissdoc groups (100 → 800) */
 const GROUP_ORDER = ["100", "200", "300", "400", "500", "600", "700", "800"];
@@ -33,15 +21,7 @@ export type CareersByDomain = {
 };
 
 export async function getAllCareers(locale: string): Promise<CareersByDomain> {
-  const professions = await prisma.profession.findMany({
-    include: {
-      translations: {
-        where: { locale },
-        select: { name: true },
-      },
-    },
-    orderBy: { id: "asc" },
-  });
+  const professions = await findAllProfessions(locale);
 
   const grouped = new Map<string, CareersByDomain["groups"][number]["professions"]>();
 
@@ -62,16 +42,16 @@ export async function getAllCareers(locale: string): Promise<CareersByDomain> {
   const groups = GROUP_ORDER
     .filter((code) => grouped.has(code))
     .map((code) => ({
-      domain: SWISSDOC_GROUP_LABELS[code] ?? code,
+      domain: code, // Will be resolved to translated label by the UI
       groupCode: code,
       professions: grouped.get(code)!.sort((a, b) => a.name.localeCompare(b.name)),
     }));
 
-  // Append any unknown group codes (shouldn't happen, but safe)
+  // Append any unknown group codes
   for (const [code, profs] of grouped) {
     if (!GROUP_ORDER.includes(code)) {
       groups.push({
-        domain: SWISSDOC_GROUP_LABELS[code] ?? "Autres",
+        domain: code,
         groupCode: code,
         professions: profs.sort((a, b) => a.name.localeCompare(b.name)),
       });

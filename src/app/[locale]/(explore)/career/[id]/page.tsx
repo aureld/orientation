@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { HeaderBar } from "@/components/header-bar";
+import { HeaderBar } from "@/components/layout/header-bar";
 import { getCareerById } from "@/app/actions/career";
 import { getSimilarProfessions } from "@/app/actions/similar-professions";
-import { CareerDetailView } from "@/components/career-detail";
-import { SimilarProfessions } from "@/components/similar-professions";
+import { CareerDetailView } from "@/components/career/career-detail";
+import { SimilarProfessions } from "@/components/career/similar-professions";
 
 export default async function CareerPage({
   params,

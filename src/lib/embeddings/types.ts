@@ -1,8 +1,5 @@
-export interface EmbeddingProvider {
-  readonly name: string;
-  readonly dimensions: number;
-  embed(text: string): Promise<number[]>;
-  embedBatch(texts: string[]): Promise<number[][]>;
-}
-
-export type EmbeddingProviderName = "ollama" | "openai";
+// Re-export from new location — this file will be removed once all imports are updated
+export type {
+  EmbeddingProvider,
+  EmbeddingProviderName,
+} from "@/infrastructure/embeddings/types";

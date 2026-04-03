@@ -3,7 +3,7 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
-import { HtmlLang } from "@/components/HtmlLang";
+import { HtmlLang } from "@/components/layout/HtmlLang";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));

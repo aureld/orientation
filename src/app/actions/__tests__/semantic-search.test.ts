@@ -1,30 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-vi.mock("@/lib/db", () => ({
-  prisma: {
-    $queryRaw: vi.fn(),
-    profession: {
-      findMany: vi.fn(),
-    },
-  },
-}));
-
-vi.mock("@/lib/embeddings/index", () => ({
+vi.mock("@/infrastructure/embeddings", () => ({
   getEmbeddingProvider: vi.fn(),
 }));
 
-vi.mock("@/lib/embeddings/vector-search", async () => {
-  const actual = await vi.importActual("@/lib/embeddings/vector-search");
-  return {
-    ...actual,
-    searchByVector: vi.fn(),
-    hasEmbeddings: vi.fn(),
-  };
-});
+vi.mock("@/repositories/embedding-repository", () => ({
+  searchByVector: vi.fn(),
+  hasEmbeddings: vi.fn(),
+  distanceToScore: vi.fn((d: number) => Math.max(0, Math.min(100, Math.round((1 - d) * 150)))),
+}));
 
 import { semanticSearch } from "../semantic-search";
-import { getEmbeddingProvider } from "@/lib/embeddings/index";
-import { searchByVector, hasEmbeddings } from "@/lib/embeddings/vector-search";
+import { getEmbeddingProvider } from "@/infrastructure/embeddings";
+import { searchByVector, hasEmbeddings } from "@/repositories/embedding-repository";
 
 const mockGetProvider = vi.mocked(getEmbeddingProvider);
 const mockSearchByVector = vi.mocked(searchByVector);
@@ -53,7 +41,7 @@ describe("semanticSearch", () => {
       { professionId: "infirm", name: "Infirmier", distance: 0.3 },
     ]);
 
-    const results = await semanticSearch("soins santé", "fr");
+    const results = await semanticSearch("soins sant\u00e9", "fr");
 
     expect(results).toHaveLength(2);
     expect(results[0].id).toBe("assc");

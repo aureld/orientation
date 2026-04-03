@@ -1,17 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-vi.mock("@/lib/db", () => ({
-  prisma: {
-    profession: {
-      findUnique: vi.fn(),
-    },
-  },
+vi.mock("@/repositories/profession-repository", () => ({
+  findProfessionById: vi.fn(),
 }));
 
 import { getCareerById } from "../career";
-import { prisma } from "@/lib/db";
+import { findProfessionById } from "@/repositories/profession-repository";
 
-const mockFindUnique = vi.mocked(prisma.profession.findUnique);
+const mockFindProfessionById = vi.mocked(findProfessionById);
 
 /** Helper to build a full mock profession row */
 function mockProfession(overrides: Record<string, unknown> = {}) {
@@ -20,7 +16,7 @@ function mockProfession(overrides: Record<string, unknown> = {}) {
     sectorId: "sante",
     type: "CFC",
     duration: 3,
-    icon: "🏥",
+    icon: "\u{1F3E5}",
     urlOrientation: "https://orientation.ch/assc",
     manuel: 3, intellectuel: 7, creatif: 2, analytique: 5,
     interieur: 8, exterieur: 2, equipe: 9, independant: 1,
@@ -28,18 +24,18 @@ function mockProfession(overrides: Record<string, unknown> = {}) {
     sector: {
       id: "sante",
       color: "--color-sante",
-      translations: [{ name: "Santé" }],
+      translations: [{ name: "Sant\u00e9" }],
     },
     translations: [
       {
-        name: "Assistant/e en soins et santé communautaire",
+        name: "Assistant/e en soins et sant\u00e9 communautaire",
         description: "Aide les patients au quotidien.",
         activities: ["Soins de base", "Prise de tension"],
         qualities: ["Empathie", "Rigueur"],
         passerelle: null,
         orientationUrl: null,
         orientationId: null,
-        domainesProfessionnels: "Médecine, santé",
+        domainesProfessionnels: "M\u00e9decine, sant\u00e9",
         descriptionFull: "Full description from orientation.ch",
         formation: "Formation details",
         perspectivesProfessionnelles: "Perspectives details",
@@ -67,7 +63,7 @@ describe("getCareerById", () => {
   });
 
   it("returns null when profession is not found", async () => {
-    mockFindUnique.mockResolvedValue(null as never);
+    mockFindProfessionById.mockResolvedValue(null);
 
     const result = await getCareerById("nonexistent", "fr");
 
@@ -75,23 +71,23 @@ describe("getCareerById", () => {
   });
 
   it("returns the full career detail for a valid id", async () => {
-    mockFindUnique.mockResolvedValue(mockProfession() as never);
+    mockFindProfessionById.mockResolvedValue(mockProfession() as never);
 
     const result = await getCareerById("assc", "fr");
 
     expect(result).toEqual({
       id: "assc",
-      icon: "🏥",
+      icon: "\u{1F3E5}",
       type: "CFC",
       duration: 3,
       urlOrientation: "https://orientation.ch/assc",
-      name: "Assistant/e en soins et santé communautaire",
+      name: "Assistant/e en soins et sant\u00e9 communautaire",
       description: "Aide les patients au quotidien.",
       activities: ["Soins de base", "Prise de tension"],
       qualities: ["Empathie", "Rigueur"],
       passerelle: null,
       sectorId: "sante",
-      sectorName: "Santé",
+      sectorName: "Sant\u00e9",
       sectorColor: "--color-sante",
       salary: {
         apprenticeYears: [
@@ -107,7 +103,7 @@ describe("getCareerById", () => {
         interieur: 8, exterieur: 2, equipe: 9, independant: 1,
         contactHumain: 10, technique: 4, routine: 5, variete: 5,
       },
-      domainesProfessionnels: "Médecine, santé",
+      domainesProfessionnels: "M\u00e9decine, sant\u00e9",
       descriptionFull: "Full description from orientation.ch",
       formation: "Formation details",
       perspectivesProfessionnelles: "Perspectives details",
@@ -116,29 +112,16 @@ describe("getCareerById", () => {
     });
   });
 
-  it("queries by id and filters translations by locale", async () => {
-    mockFindUnique.mockResolvedValue(null as never);
+  it("delegates to repository with id and locale", async () => {
+    mockFindProfessionById.mockResolvedValue(null);
 
     await getCareerById("assc", "de");
 
-    expect(mockFindUnique).toHaveBeenCalledWith({
-      where: { id: "assc" },
-      include: {
-        sector: {
-          include: {
-            translations: { where: { locale: "de" }, select: { name: true } },
-          },
-        },
-        translations: {
-          where: { locale: "de" },
-        },
-        salaries: true,
-      },
-    });
+    expect(mockFindProfessionById).toHaveBeenCalledWith("assc", "de");
   });
 
   it("falls back to profession id when no translation exists", async () => {
-    mockFindUnique.mockResolvedValue(
+    mockFindProfessionById.mockResolvedValue(
       mockProfession({ translations: [] }) as never
     );
 
@@ -151,7 +134,7 @@ describe("getCareerById", () => {
   });
 
   it("falls back to sector id when no sector translation exists", async () => {
-    mockFindUnique.mockResolvedValue(
+    mockFindProfessionById.mockResolvedValue(
       mockProfession({
         sector: { id: "sante", color: "--color-sante", translations: [] },
       }) as never
@@ -163,7 +146,7 @@ describe("getCareerById", () => {
   });
 
   it("omits null apprentice years from salary", async () => {
-    mockFindUnique.mockResolvedValue(
+    mockFindProfessionById.mockResolvedValue(
       mockProfession({
         salaries: [
           {
@@ -187,7 +170,7 @@ describe("getCareerById", () => {
   });
 
   it("returns null salary when no salary info exists", async () => {
-    mockFindUnique.mockResolvedValue(
+    mockFindProfessionById.mockResolvedValue(
       mockProfession({ salaries: [] }) as never
     );
 
@@ -197,15 +180,15 @@ describe("getCareerById", () => {
   });
 
   it("includes passerelle when present", async () => {
-    mockFindUnique.mockResolvedValue(
+    mockFindProfessionById.mockResolvedValue(
       mockProfession({
         translations: [
           {
-            name: "Polymécanicien/ne",
-            description: "Fabrique des pièces.",
+            name: "Polym\u00e9canicien/ne",
+            description: "Fabrique des pi\u00e8ces.",
             activities: ["Usinage"],
-            qualities: ["Précision"],
-            passerelle: "Accès au brevet fédéral aéronautique",
+            qualities: ["Pr\u00e9cision"],
+            passerelle: "Acc\u00e8s au brevet f\u00e9d\u00e9ral a\u00e9ronautique",
           },
         ],
       }) as never
@@ -213,6 +196,6 @@ describe("getCareerById", () => {
 
     const result = await getCareerById("assc", "fr");
 
-    expect(result!.passerelle).toBe("Accès au brevet fédéral aéronautique");
+    expect(result!.passerelle).toBe("Acc\u00e8s au brevet f\u00e9d\u00e9ral a\u00e9ronautique");
   });
 });

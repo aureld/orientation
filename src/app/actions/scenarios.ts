@@ -1,8 +1,8 @@
 "use server";
 
-import { prisma } from "@/lib/db";
-import { DIMENSIONS } from "@/lib/profile-dimensions";
-import type { ProfileVector } from "@/lib/profile-dimensions";
+import { findAllScenarios, findScenarioById } from "@/repositories/scenario-repository";
+import { DIMENSIONS } from "@/domain/profile";
+import type { ProfileVector } from "@/domain/profile";
 
 export interface ScenarioListItem {
   id: string;
@@ -15,15 +15,7 @@ export interface ScenarioListItem {
 }
 
 export async function getScenarioList(locale: string): Promise<ScenarioListItem[]> {
-  const scenarios = await prisma.scenario.findMany({
-    include: {
-      translations: { where: { locale }, select: { title: true, description: true } },
-      sector: {
-        include: { translations: { where: { locale }, select: { name: true } } },
-      },
-    },
-    orderBy: { id: "asc" },
-  });
+  const scenarios = await findAllScenarios(locale);
 
   return scenarios.map((s) => ({
     id: s.id,
@@ -72,33 +64,7 @@ export async function getScenarioById(
   id: string,
   locale: string
 ): Promise<ScenarioDetail | null> {
-  const scenario = await prisma.scenario.findUnique({
-    where: { id },
-    include: {
-      translations: { where: { locale } },
-      scenes: {
-        orderBy: { sortOrder: "asc" },
-        include: {
-          translations: { where: { locale }, select: { text: true } },
-          choices: {
-            orderBy: { sortOrder: "asc" },
-            include: {
-              translations: { where: { locale }, select: { text: true } },
-            },
-          },
-          endProfessions: {
-            include: {
-              profession: {
-                include: {
-                  translations: { where: { locale }, select: { name: true } },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  });
+  const scenario = await findScenarioById(id, locale);
 
   if (!scenario) return null;
 

@@ -1,8 +1,8 @@
 "use server";
 
-import { prisma } from "@/lib/db";
-import { DIMENSIONS } from "@/lib/profile-dimensions";
-import type { ProfileVector } from "@/lib/profile-dimensions";
+import { findProfessionById } from "@/repositories/profession-repository";
+import { DIMENSIONS } from "@/domain/profile";
+import type { ProfileVector } from "@/domain/profile";
 
 export interface CareerDetail {
   id: string;
@@ -37,20 +37,7 @@ export async function getCareerById(
   id: string,
   locale: string
 ): Promise<CareerDetail | null> {
-  const profession = await prisma.profession.findUnique({
-    where: { id },
-    include: {
-      sector: {
-        include: {
-          translations: { where: { locale }, select: { name: true } },
-        },
-      },
-      translations: {
-        where: { locale },
-      },
-      salaries: true,
-    },
-  });
+  const profession = await findProfessionById(id, locale);
 
   if (!profession) return null;
 

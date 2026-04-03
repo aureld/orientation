@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { Link } from "@/i18n/navigation";
-import { HeaderBar } from "@/components/header-bar";
-import { ProgressBar } from "@/components/progress-bar";
+import { HeaderBar } from "@/components/layout/header-bar";
+import { ProgressBar } from "@/components/layout/progress-bar";
 import type { ScenarioDetail, ScenarioScene } from "@/app/actions/scenarios";
 
 interface ScenarioPlayerProps {

@@ -2,11 +2,11 @@
 
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { HeaderBar } from "@/components/header-bar";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { RadarChart } from "@/components/radar-chart";
-import { getRadarData } from "@/lib/matching";
-import { emptyProfile } from "@/lib/profile-dimensions";
+import { HeaderBar } from "@/components/layout/header-bar";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
+import { RadarChart } from "@/components/game/radar-chart";
+import { getRadarData } from "@/domain/matching";
+import { emptyProfile } from "@/domain/profile";
 
 export default function ProfilePage() {
   const t = useTranslations("profile");

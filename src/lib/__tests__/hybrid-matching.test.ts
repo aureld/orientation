@@ -1,25 +1,25 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { emptyProfile, type ProfileVector } from "../profile-dimensions";
+import { emptyProfile, type ProfileVector } from "@/domain/profile";
 
-vi.mock("@/lib/db", () => ({
+vi.mock("@/infrastructure/db", () => ({
   prisma: {
     $queryRaw: vi.fn(),
     profession: { findMany: vi.fn() },
   },
 }));
 
-vi.mock("@/lib/embeddings/index", () => ({
+vi.mock("@/infrastructure/embeddings", () => ({
   getEmbeddingProvider: vi.fn(),
 }));
 
-vi.mock("@/lib/embeddings/vector-search", () => ({
+vi.mock("@/infrastructure/embeddings/vector-search", () => ({
   searchByVector: vi.fn(),
   hasEmbeddings: vi.fn(),
 }));
 
-import { getHybridMatches, profileToSearchQuery } from "../matching-hybrid";
-import { getEmbeddingProvider } from "@/lib/embeddings/index";
-import { searchByVector, hasEmbeddings } from "@/lib/embeddings/vector-search";
+import { getHybridMatches, profileToSearchQuery } from "@/domain/matching";
+import { getEmbeddingProvider } from "@/infrastructure/embeddings";
+import { searchByVector, hasEmbeddings } from "@/infrastructure/embeddings/vector-search";
 
 const mockGetProvider = vi.mocked(getEmbeddingProvider);
 const mockSearchByVector = vi.mocked(searchByVector);

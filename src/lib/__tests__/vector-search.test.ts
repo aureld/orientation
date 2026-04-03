@@ -1,20 +1,20 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-vi.mock("@/lib/db", () => ({
+vi.mock("@/infrastructure/db", () => ({
   prisma: {
     $executeRaw: vi.fn(),
     $queryRaw: vi.fn(),
   },
 }));
 
-import { prisma } from "@/lib/db";
+import { prisma } from "@/infrastructure/db";
 import {
   storeEmbedding,
   searchByVector,
   findSimilarProfessions,
   hasEmbeddings,
   distanceToScore,
-} from "../embeddings/vector-search";
+} from "@/infrastructure/embeddings/vector-search";
 
 const mockExecuteRaw = vi.mocked(prisma.$executeRaw);
 const mockQueryRaw = vi.mocked(prisma.$queryRaw);

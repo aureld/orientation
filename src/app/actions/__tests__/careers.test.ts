@@ -1,17 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-vi.mock("@/lib/db", () => ({
-  prisma: {
-    profession: {
-      findMany: vi.fn(),
-    },
-  },
+vi.mock("@/repositories/profession-repository", () => ({
+  findAllProfessions: vi.fn(),
 }));
 
 import { getAllCareers } from "../careers";
-import { prisma } from "@/lib/db";
+import { findAllProfessions } from "@/repositories/profession-repository";
 
-const mockFindMany = vi.mocked(prisma.profession.findMany);
+const mockFindAllProfessions = vi.mocked(findAllProfessions);
 
 function mockProfession(overrides: {
   id: string;
@@ -26,7 +22,7 @@ function mockProfession(overrides: {
     sectorId: null,
     type: overrides.type ?? "CFC",
     duration: overrides.duration ?? 3,
-    icon: overrides.icon ?? "💼",
+    icon: overrides.icon ?? "\u{1F4BC}",
     urlOrientation: null,
     swissdoc: null,
     swissdocGroup: overrides.swissdocGroup ?? null,
@@ -43,7 +39,7 @@ describe("getAllCareers", () => {
   });
 
   it("returns professions grouped by swissdocGroup", async () => {
-    mockFindMany.mockResolvedValue([
+    mockFindAllProfessions.mockResolvedValue([
       mockProfession({ id: "informaticien", swissdocGroup: "500", name: "Informaticien CFC" }),
       mockProfession({ id: "cuisinier", swissdocGroup: "200", name: "Cuisinier CFC" }),
       mockProfession({ id: "automaticien", swissdocGroup: "500", name: "Automaticien CFC" }),
@@ -60,8 +56,8 @@ describe("getAllCareers", () => {
     expect(result.groups[1].professions).toHaveLength(2);
   });
 
-  it("sorts groups in canonical swissdoc order (100 → 800)", async () => {
-    mockFindMany.mockResolvedValue([
+  it("sorts groups in canonical swissdoc order (100 \u2192 800)", async () => {
+    mockFindAllProfessions.mockResolvedValue([
       mockProfession({ id: "a", swissdocGroup: "800", name: "A" }),
       mockProfession({ id: "b", swissdocGroup: "100", name: "B" }),
       mockProfession({ id: "c", swissdocGroup: "400", name: "C" }),
@@ -73,7 +69,7 @@ describe("getAllCareers", () => {
   });
 
   it("sorts professions alphabetically by name within each group", async () => {
-    mockFindMany.mockResolvedValue([
+    mockFindAllProfessions.mockResolvedValue([
       mockProfession({ id: "z", swissdocGroup: "500", name: "Zingueur CFC" }),
       mockProfession({ id: "a", swissdocGroup: "500", name: "Automaticien CFC" }),
     ] as never);
@@ -86,18 +82,19 @@ describe("getAllCareers", () => {
     ]);
   });
 
-  it("uses swissdoc group labels as domain names", async () => {
-    mockFindMany.mockResolvedValue([
+  it("uses group code as domain identifier", async () => {
+    mockFindAllProfessions.mockResolvedValue([
       mockProfession({ id: "a", swissdocGroup: "100", name: "Agriculteur CFC" }),
     ] as never);
 
     const result = await getAllCareers("fr");
 
-    expect(result.groups[0].domain).toBe("Nature");
+    expect(result.groups[0].domain).toBe("100");
+    expect(result.groups[0].groupCode).toBe("100");
   });
 
   it("falls back to profession id when no translation exists", async () => {
-    mockFindMany.mockResolvedValue([
+    mockFindAllProfessions.mockResolvedValue([
       mockProfession({ id: "some-prof", swissdocGroup: "400" }),
     ] as never);
 
@@ -106,19 +103,11 @@ describe("getAllCareers", () => {
     expect(result.groups[0].professions[0].name).toBe("some-prof");
   });
 
-  it("queries professions with translations filtered by locale", async () => {
-    mockFindMany.mockResolvedValue([] as never);
+  it("delegates to repository with locale", async () => {
+    mockFindAllProfessions.mockResolvedValue([] as never);
 
     await getAllCareers("de");
 
-    expect(mockFindMany).toHaveBeenCalledWith(
-      expect.objectContaining({
-        include: expect.objectContaining({
-          translations: expect.objectContaining({
-            where: { locale: "de" },
-          }),
-        }),
-      })
-    );
+    expect(mockFindAllProfessions).toHaveBeenCalledWith("de");
   });
 });
