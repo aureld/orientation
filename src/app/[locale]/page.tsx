@@ -2,14 +2,16 @@
 
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
+import { startGame } from "@/app/actions/game-state";
 
 export default function HomePage() {
   const t = useTranslations("home");
   const router = useRouter();
   const [name, setName] = useState("");
   const [error, setError] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   function handleStart() {
     const trimmed = name.trim();
@@ -17,9 +19,10 @@ export default function HomePage() {
       setError(true);
       return;
     }
-    // Store name in localStorage for now — will migrate to DB session later
-    localStorage.setItem("playerName", trimmed);
-    router.push("/scenarios");
+    startTransition(async () => {
+      await startGame(trimmed);
+      router.push("/scenarios");
+    });
   }
 
   return (
@@ -28,7 +31,7 @@ export default function HomePage() {
         <ThemeToggle />
       </div>
 
-      <div className="mb-2 text-4xl">✈️🏗️💻🍳🌾</div>
+      <div className="mb-2 text-4xl">{"\u2708\uFE0F\u{1F3D7}\uFE0F\u{1F4BB}\u{1F373}\u{1F33E}"}</div>
       <h1 className="mb-2 text-4xl font-extrabold text-accent">{t("title")}</h1>
       <p className="mb-8 text-lg text-muted">{t("subtitle")}</p>
 
@@ -47,12 +50,17 @@ export default function HomePage() {
               : "border-border focus:border-accent"
           } bg-surface`}
           onKeyDown={(e) => e.key === "Enter" && handleStart()}
+          disabled={isPending}
         />
       </div>
 
       <div className="flex flex-col gap-3">
-        <button onClick={handleStart} className="btn btn-primary animate-pulse">
-          {t("start")}
+        <button
+          onClick={handleStart}
+          className="btn btn-primary animate-pulse"
+          disabled={isPending}
+        >
+          {isPending ? t("loading", { defaultMessage: "..." }) : t("start")}
         </button>
       </div>
 
@@ -62,17 +70,6 @@ export default function HomePage() {
           className="hover:text-foreground transition-colors"
         >
           {t("about")}
-        </button>
-        <button
-          onClick={() => {
-            if (confirm(t("resetConfirm"))) {
-              localStorage.clear();
-              window.location.reload();
-            }
-          }}
-          className="hover:text-foreground transition-colors"
-        >
-          {t("reset")}
         </button>
       </div>
     </div>

@@ -5,26 +5,28 @@ import { useEffect, useState } from "react";
 import { HeaderBar } from "@/components/layout/header-bar";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { RadarChart } from "@/components/game/radar-chart";
-import { getRadarData } from "@/domain/matching";
+import { getRadarData } from "@/domain/matching/radar";
 import { emptyProfile } from "@/domain/profile";
+import { getUserGameState, type UserProgressDTO } from "@/app/actions/game-state";
 
 export default function ProfilePage() {
   const t = useTranslations("profile");
   const ts = useTranslations("profile.stats");
-  const [playerName, setPlayerName] = useState("");
+  const [gameState, setGameState] = useState<UserProgressDTO | null>(null);
 
   useEffect(() => {
-    setPlayerName(localStorage.getItem("playerName") || "");
+    getUserGameState().then(setGameState);
   }, []);
 
-  const profile = emptyProfile();
+  const profile = gameState?.profile ?? emptyProfile();
   const radarData = getRadarData(profile);
+  const scenarioCount = gameState?.completedScenarioIds.length ?? 0;
 
   const stats = [
-    { label: ts("points"), value: "0", icon: "⭐" },
-    { label: ts("scenarios"), value: "0/11", icon: "🎮" },
-    { label: ts("badges"), value: "0/8", icon: "🏅" },
-    { label: ts("careersSeen"), value: "0", icon: "📚" },
+    { label: ts("points"), value: String(gameState?.choiceCount ?? 0), icon: "\u2B50" },
+    { label: ts("scenarios"), value: `${scenarioCount}/11`, icon: "\u{1F3AE}" },
+    { label: ts("badges"), value: "0/8", icon: "\u{1F3C5}" },
+    { label: ts("careersSeen"), value: "0", icon: "\u{1F4DA}" },
   ];
 
   return (
@@ -32,7 +34,7 @@ export default function ProfilePage() {
       <HeaderBar title={t("title")} showBack right={<ThemeToggle />} />
 
       <h2 className="mt-6 text-2xl font-bold">
-        {playerName || "Aventurier"} — {t("title")}
+        {gameState?.name ?? "Aventurier"} — {t("title")}
       </h2>
 
       <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -52,7 +54,7 @@ export default function ProfilePage() {
       <div className="badge-grid mt-3">
         {Array.from({ length: 8 }).map((_, i) => (
           <div key={i} className="badge-item locked">
-            <span className="badge-icon">🔒</span>
+            <span className="badge-icon">{"\u{1F512}"}</span>
             <div className="badge-name">{t("locked")}</div>
           </div>
         ))}

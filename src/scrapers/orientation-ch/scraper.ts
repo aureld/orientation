@@ -1,4 +1,5 @@
 import * as cheerio from "cheerio";
+import type { Element } from "domhandler";
 import type { Scraper, ScrapedRecord, ScrapeOptions } from "../types";
 import type { OrientationChProfession } from "./types";
 
@@ -38,7 +39,7 @@ function extractSectionText($: cheerio.CheerioAPI, anchorId: string): string {
 
 function htmlToText(
   $: cheerio.CheerioAPI,
-  el: cheerio.Cheerio<cheerio.Element>
+  el: cheerio.Cheerio<Element>
 ): string {
   const html = el.html();
   if (!html) return "";

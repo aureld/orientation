@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "@/i18n/navigation";
 import { HeaderBar } from "@/components/layout/header-bar";
 import { ProgressBar } from "@/components/layout/progress-bar";
+import { saveChoice, completeScenario } from "@/app/actions/game-state";
 import type { ScenarioDetail, ScenarioScene } from "@/app/actions/scenarios";
 
 interface ScenarioPlayerProps {
@@ -28,9 +29,11 @@ export function ScenarioPlayer({ scenario, labels }: ScenarioPlayerProps) {
     .filter((s) => s.sortOrder <= scene.sortOrder)
     .indexOf(scene);
 
-  function handleChoice(nextSceneKey: string | null) {
-    if (!nextSceneKey) return;
-    setCurrentKey(nextSceneKey);
+  function handleChoice(choice: { id: string; nextSceneKey: string | null; tags: Record<string, number> }) {
+    if (!choice.nextSceneKey) return;
+    // Fire-and-forget: save to DB without blocking UI
+    saveChoice(scenario.id, scene!.sceneKey, choice.id, choice.tags as never);
+    setCurrentKey(choice.nextSceneKey);
   }
 
   if (scene.isFinal) {
@@ -55,7 +58,7 @@ export function ScenarioPlayer({ scenario, labels }: ScenarioPlayerProps) {
           <button
             key={choice.id}
             className="btn-choice"
-            onClick={() => handleChoice(choice.nextSceneKey)}
+            onClick={() => handleChoice(choice)}
           >
             {choice.text}
           </button>
@@ -81,6 +84,15 @@ function EndScreen({
   scenario: ScenarioDetail;
   labels: ScenarioPlayerProps["labels"];
 }) {
+  const completedRef = useRef(false);
+
+  useEffect(() => {
+    if (!completedRef.current) {
+      completedRef.current = true;
+      completeScenario(scenario.id);
+    }
+  }, [scenario.id]);
+
   return (
     <>
       <HeaderBar title={scenario.title} showBack />

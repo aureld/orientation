@@ -21,6 +21,17 @@ vi.mock("next-intl", () => ({
   useTranslations: () => (key: string) => key,
 }));
 
+// Mock game-state server actions
+vi.mock("@/app/actions/game-state", () => ({
+  saveChoice: vi.fn(),
+  completeScenario: vi.fn(),
+}));
+
+import { saveChoice, completeScenario } from "@/app/actions/game-state";
+
+const mockSaveChoice = vi.mocked(saveChoice);
+const mockCompleteScenario = vi.mocked(completeScenario);
+
 const scenario: ScenarioDetail = {
   id: "hopital",
   icon: "🏥",
@@ -117,5 +128,28 @@ describe("ScenarioPlayer", () => {
 
     expect(screen.getByText("Laborantin/e")).toBeInTheDocument();
     expect(screen.queryByText("ASSC")).not.toBeInTheDocument();
+  });
+
+  it("calls saveChoice when a choice is clicked", async () => {
+    const user = userEvent.setup();
+    render(<ScenarioPlayer scenario={scenario} labels={labels} />);
+
+    await user.click(screen.getByText("Les urgences"));
+
+    expect(mockSaveChoice).toHaveBeenCalledWith(
+      "hopital",
+      "arrivee",
+      "c1",
+      expect.objectContaining({ equipe: 1, contactHumain: 2, variete: 2 })
+    );
+  });
+
+  it("calls completeScenario when reaching a final scene", async () => {
+    const user = userEvent.setup();
+    render(<ScenarioPlayer scenario={scenario} labels={labels} />);
+
+    await user.click(screen.getByText("Les urgences"));
+
+    expect(mockCompleteScenario).toHaveBeenCalledWith("hopital");
   });
 });

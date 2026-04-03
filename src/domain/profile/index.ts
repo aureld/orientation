@@ -5,3 +5,4 @@ export {
   type Dimension,
   type ProfileVector,
 } from "./dimensions";
+export { accumulateProfile } from "./accumulate";
