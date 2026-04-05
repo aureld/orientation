@@ -7,6 +7,7 @@ import { hashPassword } from "@/infrastructure/password";
 import {
   findUserByEmail,
   upgradeGuestToRegistered,
+  createRegisteredUser,
 } from "@/repositories/user-repository";
 
 async function getUserId(): Promise<string | null> {
@@ -32,13 +33,23 @@ export async function registerUser(
     return { error: "emailTaken" };
   }
 
+  const hashed = await hashPassword(password);
+
+  // If there's an existing guest session, upgrade it; otherwise create a new user
   const userId = await getUserId();
-  if (!userId) {
-    return { error: "noSession" };
+  if (userId) {
+    await upgradeGuestToRegistered(userId, email, hashed);
+  } else {
+    const name = email.split("@")[0];
+    await createRegisteredUser(email, name, hashed);
   }
 
-  const hashed = await hashPassword(password);
-  await upgradeGuestToRegistered(userId, email, hashed);
+  // Auto-login after registration
+  try {
+    await signIn("credentials", { email, password, redirect: false });
+  } catch {
+    // Sign-in after registration is best-effort
+  }
 
   return {};
 }

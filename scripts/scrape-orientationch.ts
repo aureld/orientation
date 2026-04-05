@@ -75,7 +75,7 @@ function extractSectionText($: cheerio.CheerioAPI, anchorId: string): string {
  */
 function htmlToText(
   $: cheerio.CheerioAPI,
-  el: cheerio.Cheerio<cheerio.Element>
+  el: cheerio.Cheerio<import("domhandler").Element>
 ): string {
   const html = el.html();
   if (!html) return "";

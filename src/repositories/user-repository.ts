@@ -55,3 +55,13 @@ export function upgradeGuestToRegistered(
     data: { email, passwordHash, isGuest: false },
   });
 }
+
+export function createRegisteredUser(
+  email: string,
+  name: string,
+  passwordHash: string
+) {
+  return prisma.user.create({
+    data: { email, name, passwordHash, isGuest: false },
+  });
+}

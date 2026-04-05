@@ -1,10 +1,12 @@
+import type { ReactNode } from "react";
 import { auth } from "@/infrastructure/auth";
 import { redirect } from "next/navigation";
-import HomePage from "@/components/home/home-page";
 
-export default async function Page({
+export default async function GameLayout({
+  children,
   params,
 }: {
+  children: ReactNode;
   params: Promise<{ locale: string }>;
 }) {
   const session = await auth();
@@ -12,5 +14,5 @@ export default async function Page({
     const { locale } = await params;
     redirect(`/${locale}/login`);
   }
-  return <HomePage />;
+  return <>{children}</>;
 }
