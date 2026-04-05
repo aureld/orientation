@@ -1,0 +1,53 @@
+# CTF-hardened override — use with:
+#   docker-compose -f docker-compose.yml -f docker-compose.ctf.yml up --build
+
+services:
+  db:
+    # Remove host-exposed port — only reachable from the internal network
+    ports: !override []
+    networks:
+      - internal
+    # Read-only root filesystem; Postgres needs a writable data dir + run dir
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run/postgresql
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    security_opt:
+      - no-new-privileges:true
+
+  app:
+    networks:
+      - internal
+      - web
+    # Read-only root filesystem; Next.js needs /tmp for cache
+    read_only: true
+    tmpfs:
+      - /tmp
+    # Drop ALL Linux capabilities, only keep what's needed
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+        reservations:
+          memory: 128M
+    # Prevent the container from gaining additional access
+    privileged: false
+
+networks:
+  # Internal network: app <-> db only, no internet access
+  internal:
+    driver: bridge
+    internal: true
+  # Web network: only the app's port 3000 is exposed to the host
+  web:
+    driver: bridge

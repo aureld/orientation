@@ -35,7 +35,17 @@ npm run lint
 npx tsx scripts/scrape-orientationch.ts    # Scrape profession data from orientation.ch
 npx tsx scripts/import-professions.ts      # Import scraped data into DB
 npx tsx scripts/generate-embeddings.ts     # Generate vector embeddings for professions
+
+# Docker
+docker-compose up --build                  # Build and run (app + PostgreSQL/pgvector)
+docker-compose down                        # Stop (preserves data)
+docker-compose down -v                     # Stop and wipe DB
+
+# Docker — CTF hardened mode (read-only FS, no internet, zero capabilities)
+docker-compose -f docker-compose.yml -f docker-compose.ctf.yml up --build
 ```
+
+> See [docs/docker.md](docs/docker.md) for full Docker documentation including environment variables, standalone output details, and CTF isolation layers.
 
 ## Architecture
 
