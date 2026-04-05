@@ -3,8 +3,10 @@
 import { cookies } from "next/headers";
 import { AuthError } from "next-auth";
 import { auth, signIn, signOut } from "@/infrastructure/auth";
+import { verifyCookie } from "@/infrastructure/cookie-signature";
 import { hashPassword } from "@/infrastructure/password";
 import {
+  findUserById,
   findUserByEmail,
   upgradeGuestToRegistered,
   createRegisteredUser,
@@ -14,7 +16,9 @@ async function getUserId(): Promise<string | null> {
   const session = await auth();
   if (session?.user?.id) return session.user.id;
   const cookieStore = await cookies();
-  return cookieStore.get("userId")?.value ?? null;
+  const raw = cookieStore.get("userId")?.value;
+  if (!raw) return null;
+  return verifyCookie(raw);
 }
 
 export async function registerUser(
@@ -37,10 +41,15 @@ export async function registerUser(
 
   // If there's an existing guest session, upgrade it; otherwise create a new user
   const userId = await getUserId();
+  const name = email.split("@")[0];
   if (userId) {
-    await upgradeGuestToRegistered(userId, email, hashed);
+    const existing = await findUserById(userId);
+    if (existing?.isGuest) {
+      await upgradeGuestToRegistered(userId, email, hashed);
+    } else {
+      await createRegisteredUser(email, name, hashed);
+    }
   } else {
-    const name = email.split("@")[0];
     await createRegisteredUser(email, name, hashed);
   }
 

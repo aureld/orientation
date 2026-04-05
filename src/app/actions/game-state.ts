@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 import { DIMENSIONS, type ProfileVector } from "@/domain/profile";
 import { auth } from "@/infrastructure/auth";
+import { signCookie, verifyCookie } from "@/infrastructure/cookie-signature";
 import { createAnonymousUser, findUserById, incrementUserProfile } from "@/repositories/user-repository";
 import {
   saveUserChoice,
@@ -17,15 +18,17 @@ async function getUserId(): Promise<string | null> {
   const session = await auth();
   if (session?.user?.id) return session.user.id;
 
-  // Fall back to cookie (guest users)
+  // Fall back to signed cookie (guest users)
   const cookieStore = await cookies();
-  return cookieStore.get(USER_COOKIE)?.value ?? null;
+  const raw = cookieStore.get(USER_COOKIE)?.value;
+  if (!raw) return null;
+  return verifyCookie(raw);
 }
 
 export async function startGame(name: string): Promise<string> {
   const user = await createAnonymousUser(name.trim());
   const cookieStore = await cookies();
-  cookieStore.set(USER_COOKIE, user.id, {
+  cookieStore.set(USER_COOKIE, signCookie(user.id), {
     httpOnly: true,
     sameSite: "lax",
     maxAge: 60 * 60 * 24 * 90, // 90 days

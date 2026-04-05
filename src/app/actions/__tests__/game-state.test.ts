@@ -16,6 +16,16 @@ vi.mock("@/infrastructure/auth", () => ({
   auth: () => mockAuth(),
 }));
 
+// Provide AUTH_SECRET for cookie signing
+vi.stubEnv("AUTH_SECRET", "test-secret-for-unit-tests-only");
+
+vi.mock("@/infrastructure/cookie-signature", async () => {
+  const actual = await vi.importActual<
+    typeof import("@/infrastructure/cookie-signature")
+  >("@/infrastructure/cookie-signature");
+  return actual;
+});
+
 vi.mock("@/repositories/user-repository", () => ({
   createAnonymousUser: vi.fn(),
   findUserById: vi.fn(),
@@ -29,6 +39,7 @@ vi.mock("@/repositories/game-state-repository", () => ({
 }));
 
 import { startGame, saveChoice, completeScenario, getUserGameState } from "../game-state";
+import { signCookie } from "@/infrastructure/cookie-signature";
 import { createAnonymousUser, findUserById, incrementUserProfile } from "@/repositories/user-repository";
 import { saveUserChoice, markScenarioComplete, getUserProgress } from "@/repositories/game-state-repository";
 
@@ -54,7 +65,7 @@ describe("startGame", () => {
     expect(mockCreateUser).toHaveBeenCalledWith("Alice");
     expect(mockCookieStore.set).toHaveBeenCalledWith(
       "userId",
-      "user-123",
+      signCookie("user-123"),
       expect.objectContaining({
         httpOnly: true,
         sameSite: "lax",
@@ -73,7 +84,7 @@ describe("startGame", () => {
 
 describe("saveChoice", () => {
   it("saves the choice and increments profile when user has cookie", async () => {
-    mockCookieStore.get.mockReturnValue({ value: "user-123" });
+    mockCookieStore.get.mockReturnValue({ value: signCookie("user-123") });
     mockSaveChoice.mockResolvedValueOnce({} as never);
     mockIncrementProfile.mockResolvedValueOnce({} as never);
 
@@ -96,7 +107,7 @@ describe("saveChoice", () => {
 
 describe("completeScenario", () => {
   it("marks the scenario complete when user has cookie", async () => {
-    mockCookieStore.get.mockReturnValue({ value: "user-123" });
+    mockCookieStore.get.mockReturnValue({ value: signCookie("user-123") });
     mockMarkComplete.mockResolvedValueOnce({} as never);
 
     await completeScenario("hopital");
@@ -115,7 +126,7 @@ describe("completeScenario", () => {
 
 describe("getUserGameState", () => {
   it("returns user progress and profile", async () => {
-    mockCookieStore.get.mockReturnValue({ value: "user-123" });
+    mockCookieStore.get.mockReturnValue({ value: signCookie("user-123") });
     mockFindUser.mockResolvedValueOnce({
       id: "user-123",
       name: "Alice",
@@ -147,7 +158,7 @@ describe("getUserGameState", () => {
   });
 
   it("returns null when user is not found in DB", async () => {
-    mockCookieStore.get.mockReturnValue({ value: "nonexistent" });
+    mockCookieStore.get.mockReturnValue({ value: signCookie("nonexistent") });
     mockFindUser.mockResolvedValueOnce(null);
 
     const result = await getUserGameState();
