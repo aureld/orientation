@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { HeaderBar } from "@/components/layout/header-bar";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
+import { LogoutButton } from "@/components/layout/logout-button";
 import { getScenarioList } from "@/app/actions/scenarios";
 
 export default async function ScenariosPage({
@@ -19,7 +20,7 @@ export default async function ScenariosPage({
     <div className="animate-fade-in mx-auto max-w-2xl px-4 pb-12">
       <HeaderBar
         title={t("title")}
-        right={<ThemeToggle />}
+        right={<div className="flex items-center gap-1"><ThemeToggle /><LogoutButton /></div>}
       />
 
       <div className="mb-2 mt-4">

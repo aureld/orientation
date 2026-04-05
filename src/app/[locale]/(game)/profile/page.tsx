@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { HeaderBar } from "@/components/layout/header-bar";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
+import { LogoutButton } from "@/components/layout/logout-button";
 import { RadarChart } from "@/components/game/radar-chart";
 import { getRadarData } from "@/domain/matching/radar";
 import { emptyProfile } from "@/domain/profile";
@@ -31,7 +32,7 @@ export default function ProfilePage() {
 
   return (
     <div className="animate-fade-in mx-auto max-w-2xl px-4 pb-12">
-      <HeaderBar title={t("title")} showBack right={<ThemeToggle />} />
+      <HeaderBar title={t("title")} showBack right={<div className="flex items-center gap-1"><ThemeToggle /><LogoutButton /></div>} />
 
       <h2 className="mt-6 text-2xl font-bold">
         {gameState?.name ?? "Aventurier"} — {t("title")}
