@@ -38,8 +38,13 @@ vi.mock("@/infrastructure/cookie-signature", async () => {
   return actual;
 });
 
+const mockVerifyPassword = vi.fn((_plain: string, _hashed: string) =>
+  Promise.resolve(false)
+);
 vi.mock("@/infrastructure/password", () => ({
   hashPassword: vi.fn((p: string) => Promise.resolve(`hashed:${p}`)),
+  verifyPassword: (...args: unknown[]) => mockVerifyPassword(...(args as [string, string])),
+  DUMMY_HASH: "$2a$12$dummy.hash.for.timing.decoy.only",
 }));
 
 vi.mock("@/repositories/user-repository", () => ({
@@ -49,7 +54,7 @@ vi.mock("@/repositories/user-repository", () => ({
   createRegisteredUser: vi.fn(),
 }));
 
-import { registerUser } from "../auth";
+import { registerUser, loginUser } from "../auth";
 import { signCookie } from "@/infrastructure/cookie-signature";
 import {
   findUserById,
@@ -231,5 +236,52 @@ describe("registerUser validation", () => {
       "fresh",
       "hashed:password123"
     );
+  });
+});
+
+// ── H2 Regression: Timing-safe login ─────────────────────────────────
+
+describe("H2 regression: timing-safe login", () => {
+  it("calls verifyPassword even when no account exists (timing decoy)", async () => {
+    mockFindByEmail.mockResolvedValue(null);
+
+    const result = await loginUser("nonexistent@example.com", "password123");
+
+    expect(result).toEqual({ error: "invalidCredentials" });
+    // Must still call verifyPassword against the dummy hash
+    expect(mockVerifyPassword).toHaveBeenCalledWith(
+      "password123",
+      "$2a$12$dummy.hash.for.timing.decoy.only"
+    );
+  });
+
+  it("calls verifyPassword with real hash when account exists", async () => {
+    mockFindByEmail.mockResolvedValue({
+      id: "user-1",
+      email: "user@example.com",
+      passwordHash: "$2a$12$real.hash",
+    } as never);
+    mockVerifyPassword.mockResolvedValueOnce(false);
+
+    const result = await loginUser("user@example.com", "wrongpass");
+
+    expect(result).toEqual({ error: "invalidCredentials" });
+    expect(mockVerifyPassword).toHaveBeenCalledWith("wrongpass", "$2a$12$real.hash");
+  });
+
+  it("succeeds when password is correct", async () => {
+    mockFindByEmail.mockResolvedValue({
+      id: "user-1",
+      email: "user@example.com",
+      passwordHash: "$2a$12$real.hash",
+    } as never);
+    mockVerifyPassword.mockResolvedValueOnce(true);
+    mockSignIn.mockResolvedValueOnce(undefined);
+
+    const result = await loginUser("user@example.com", "correctpass");
+
+    expect(result).toEqual({});
+    expect(mockVerifyPassword).toHaveBeenCalledWith("correctpass", "$2a$12$real.hash");
+    expect(mockSignIn).toHaveBeenCalled();
   });
 });

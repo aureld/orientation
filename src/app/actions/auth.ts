@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { AuthError } from "next-auth";
 import { auth, signIn, signOut } from "@/infrastructure/auth";
 import { verifyCookie } from "@/infrastructure/cookie-signature";
-import { hashPassword } from "@/infrastructure/password";
+import { hashPassword, verifyPassword, DUMMY_HASH } from "@/infrastructure/password";
 import {
   findUserById,
   findUserByEmail,
@@ -91,15 +91,15 @@ export async function loginUser(
   }
 
   const user = await findUserByEmail(email);
-  if (!user || !user.passwordHash) {
-    console.warn(`[auth] login failed: no account for ${email}`);
-    return { error: "invalidCredentials" };
-  }
 
-  const { verifyPassword } = await import("@/infrastructure/password");
-  const valid = await verifyPassword(password, user.passwordHash);
-  if (!valid) {
-    console.warn(`[auth] login failed: wrong password for ${email}`);
+  // Always run bcrypt compare to prevent timing-based account enumeration.
+  // When no account exists, compare against a dummy hash so both paths
+  // take the same ~200ms.
+  const hashToCheck = user?.passwordHash ?? DUMMY_HASH;
+  const valid = await verifyPassword(password, hashToCheck);
+
+  if (!user || !user.passwordHash || !valid) {
+    console.warn(`[auth] login failed for ${email}`);
     return { error: "invalidCredentials" };
   }
 
