@@ -30,11 +30,19 @@ async function getUserId(): Promise<string | null> {
   return verifyCookie(raw);
 }
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const EMAIL_MAX_LENGTH = 254; // RFC 5321 path limit
+
+function isValidEmail(email: string): boolean {
+  return email.length <= EMAIL_MAX_LENGTH && EMAIL_RE.test(email);
+}
+
 export async function registerUser(
-  email: string,
+  rawEmail: string,
   password: string
 ): Promise<{ error?: string }> {
-  if (!email || !email.includes("@")) {
+  const email = rawEmail.trim();
+  if (!isValidEmail(email)) {
     return { error: "invalidEmail" };
   }
   if (password.length < 6) {
@@ -83,9 +91,10 @@ export async function registerUser(
 }
 
 export async function loginUser(
-  email: string,
+  rawEmail: string,
   password: string
 ): Promise<{ error?: string }> {
+  const email = rawEmail.trim();
   if (!email || !password) {
     return { error: "invalidCredentials" };
   }

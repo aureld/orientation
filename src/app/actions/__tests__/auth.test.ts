@@ -205,6 +205,44 @@ describe("C3 regression: race condition in registerUser", () => {
   });
 });
 
+// ── H3 Regression: Email validation ──────────────────────────────────
+
+describe("H3 regression: email validation", () => {
+  it.each([
+    ["@", "bare at sign"],
+    ["a@b", "no domain dot"],
+    ["  @  ", "whitespace with at sign"],
+    ["test@.com", "dot-leading domain"],
+    ["a@b@c", "multiple at signs"],
+    ["", "empty string"],
+    ["no-at-sign", "missing at sign"],
+    ["user@", "missing domain"],
+    ["@domain.com", "missing local part"],
+    ["user@domain.c", "single-char TLD"],
+    ["a".repeat(255) + "@example.com", "exceeds 254 char limit"],
+  ])("rejects %j (%s)", async (email) => {
+    const result = await registerUser(email, "password123");
+    expect(result).toEqual({ error: "invalidEmail" });
+  });
+
+  it("accepts a valid email", async () => {
+    mockCreateRegistered.mockResolvedValue({} as never);
+    const result = await registerUser("valid@example.com", "password123");
+    expect(result).not.toEqual({ error: "invalidEmail" });
+  });
+
+  it("trims whitespace before validating", async () => {
+    mockCreateRegistered.mockResolvedValue({} as never);
+    const result = await registerUser("  valid@example.com  ", "password123");
+    expect(result).not.toEqual({ error: "invalidEmail" });
+    expect(mockCreateRegistered).toHaveBeenCalledWith(
+      "valid@example.com",
+      "valid",
+      expect.any(String)
+    );
+  });
+});
+
 // ── Basic auth validation ─────────────────────────────────────────────
 
 describe("registerUser validation", () => {
