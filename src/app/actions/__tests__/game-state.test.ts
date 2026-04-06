@@ -73,6 +73,16 @@ describe("startGame", () => {
     );
   });
 
+  it("sets secure flag based on NODE_ENV", async () => {
+    mockCreateUser.mockResolvedValueOnce({ id: "user-1", name: "A" } as never);
+
+    await startGame("A");
+
+    const cookieOptions = mockCookieStore.set.mock.calls[0][2];
+    // In test env, NODE_ENV !== "production" so secure should be false
+    expect(cookieOptions.secure).toBe(false);
+  });
+
   it("trims the name before creating user", async () => {
     mockCreateUser.mockResolvedValueOnce({ id: "user-1", name: "Bob" } as never);
 

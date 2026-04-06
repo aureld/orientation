@@ -30,6 +30,7 @@ export async function startGame(name: string): Promise<string> {
   const cookieStore = await cookies();
   cookieStore.set(USER_COOKIE, signCookie(user.id), {
     httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     maxAge: 60 * 60 * 24 * 90, // 90 days
     path: "/",
