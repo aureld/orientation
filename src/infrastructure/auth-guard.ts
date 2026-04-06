@@ -1,6 +1,6 @@
 import { routing } from "@/i18n/routing";
 
-const PUBLIC_PATHS = ["/login", "/register"];
+const PUBLIC_PATHS = ["/", "/login", "/register"];
 
 const localePrefix = new RegExp(
   `^/(${routing.locales.join("|")})(?=/|$)`

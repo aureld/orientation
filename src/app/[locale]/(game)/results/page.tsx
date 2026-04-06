@@ -4,6 +4,8 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { HeaderBar } from "@/components/layout/header-bar";
+import { ProfileDropdown } from "@/components/layout/profile-dropdown";
+import { GuestBanner } from "@/components/layout/guest-banner";
 import { RadarChart } from "@/components/game/radar-chart";
 import { getRadarData } from "@/domain/matching/radar";
 import { emptyProfile } from "@/domain/profile";
@@ -20,10 +22,29 @@ export default function ResultsPage() {
   const profile = gameState?.profile ?? emptyProfile();
   const radarData = getRadarData(profile);
   const scenarioCount = gameState?.completedScenarioIds.length ?? 0;
+  const isGuest = gameState?.isGuest ?? true;
 
   return (
     <div className="animate-fade-in mx-auto max-w-2xl px-4 pb-12">
-      <HeaderBar title={t("title")} showBack />
+      <HeaderBar
+        title={t("title")}
+        showBack
+        right={
+          gameState ? (
+            <ProfileDropdown
+              name={gameState.name}
+              avatar={gameState.avatar}
+              isGuest={isGuest}
+            />
+          ) : undefined
+        }
+      />
+
+      {isGuest && gameState && (
+        <div className="mt-3">
+          <GuestBanner />
+        </div>
+      )}
 
       <h2 className="mt-6 text-2xl font-bold">
         {t("profileTitle", { name: gameState?.name ?? "" })}

@@ -4,7 +4,8 @@ import { cookies } from "next/headers";
 import { DIMENSIONS, type ProfileVector } from "@/domain/profile";
 import { auth } from "@/infrastructure/auth";
 import { signCookie, verifyCookie } from "@/infrastructure/cookie-signature";
-import { createAnonymousUser, findUserById, incrementUserProfile } from "@/repositories/user-repository";
+import { createAnonymousUser, findUserById, incrementUserProfile, updateUserAvatar as repoUpdateAvatar } from "@/repositories/user-repository";
+import { isValidAvatar } from "@/domain/profile";
 import {
   saveUserChoice,
   markScenarioComplete,
@@ -60,6 +61,7 @@ export async function completeScenario(scenarioId: string): Promise<void> {
 
 export interface UserProgressDTO {
   name: string;
+  avatar: string | null;
   completedScenarioIds: string[];
   choiceCount: number;
   profile: ProfileVector;
@@ -82,9 +84,22 @@ export async function getUserGameState(): Promise<UserProgressDTO | null> {
 
   return {
     name: user.name,
+    avatar: user.image,
     completedScenarioIds: progress.completedScenarioIds,
     choiceCount: progress.choiceCount,
     profile,
     isGuest: user.isGuest,
   };
+}
+
+export async function updateAvatar(avatar: string): Promise<{ error?: string }> {
+  if (!isValidAvatar(avatar)) {
+    return { error: "invalidAvatar" };
+  }
+
+  const userId = await getUserId();
+  if (!userId) return { error: "noSession" };
+
+  await repoUpdateAvatar(userId, avatar);
+  return {};
 }

@@ -5,13 +5,17 @@ import { useState, useTransition } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { Link } from "@/i18n/navigation";
 import { registerUser } from "@/app/actions/auth";
+import { AvatarPicker } from "@/components/game/avatar-picker";
+import { DEFAULT_AVATAR } from "@/domain/profile";
 
 export default function RegisterPage() {
   const t = useTranslations("auth");
+  const tp = useTranslations("profile");
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [avatar, setAvatar] = useState(DEFAULT_AVATAR as string);
   const [error, setError] = useState("");
   const [isPending, startTransition] = useTransition();
 
@@ -25,7 +29,7 @@ export default function RegisterPage() {
     }
 
     startTransition(async () => {
-      const result = await registerUser(email, password);
+      const result = await registerUser(email, password, avatar);
       if (result.error) {
         setError(t(`errors.${result.error}` as "errors.invalidEmail"));
       } else {
@@ -40,6 +44,10 @@ export default function RegisterPage() {
         <h1 className="mb-8 text-center text-3xl font-bold">{t("register")}</h1>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <div className="mb-2">
+            <AvatarPicker selected={avatar} onSelect={setAvatar} />
+          </div>
+
           <input
             type="email"
             value={email}

@@ -16,6 +16,7 @@ import {
   findUserById,
   incrementUserProfile,
   decrementUserProfile,
+  updateUserAvatar,
 } from "../user-repository";
 import { emptyProfile, type ProfileVector } from "@/domain/profile";
 
@@ -88,6 +89,19 @@ describe("incrementUserProfile", () => {
     expect(mockUpdate).toHaveBeenCalledWith({
       where: { id: "user-1" },
       data: {},
+    });
+  });
+});
+
+describe("updateUserAvatar", () => {
+  it("updates the user image field", async () => {
+    mockUpdate.mockResolvedValueOnce({} as never);
+
+    await updateUserAvatar("user-1", "\u{1F98A}");
+
+    expect(mockUpdate).toHaveBeenCalledWith({
+      where: { id: "user-1" },
+      data: { image: "\u{1F98A}" },
     });
   });
 });

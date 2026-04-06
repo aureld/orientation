@@ -1,9 +1,10 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { HeaderBar } from "@/components/layout/header-bar";
-import { ThemeToggle } from "@/components/layout/theme-toggle";
-import { LogoutButton } from "@/components/layout/logout-button";
+import { ProfileDropdown } from "@/components/layout/profile-dropdown";
+import { GuestBanner } from "@/components/layout/guest-banner";
 import { getScenarioList } from "@/app/actions/scenarios";
+import { getUserGameState } from "@/app/actions/game-state";
 
 export default async function ScenariosPage({
   params,
@@ -11,17 +12,34 @@ export default async function ScenariosPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  const [t, scenarios] = await Promise.all([
+  const [t, scenarios, gameState] = await Promise.all([
     getTranslations("scenarios"),
     getScenarioList(locale),
+    getUserGameState(),
   ]);
+
+  const isGuest = gameState?.isGuest ?? true;
 
   return (
     <div className="animate-fade-in mx-auto max-w-2xl px-4 pb-12">
       <HeaderBar
         title={t("title")}
-        right={<div className="flex items-center gap-1"><ThemeToggle /><LogoutButton /></div>}
+        right={
+          gameState ? (
+            <ProfileDropdown
+              name={gameState.name}
+              avatar={gameState.avatar}
+              isGuest={isGuest}
+            />
+          ) : undefined
+        }
       />
+
+      {isGuest && (
+        <div className="mt-3">
+          <GuestBanner />
+        </div>
+      )}
 
       <div className="mb-2 mt-4">
         <p className="text-muted">{t("instructions")}</p>

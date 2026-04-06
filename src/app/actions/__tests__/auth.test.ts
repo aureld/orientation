@@ -52,6 +52,7 @@ vi.mock("@/repositories/user-repository", () => ({
   findUserByEmail: vi.fn(),
   upgradeGuestToRegistered: vi.fn(),
   createRegisteredUser: vi.fn(),
+  updateUserAvatar: vi.fn(),
 }));
 
 import { registerUser, loginUser } from "../auth";
@@ -91,7 +92,8 @@ describe("C2 regression: cookie forgery protection", () => {
     expect(mockCreateRegistered).toHaveBeenCalledWith(
       "attacker@evil.com",
       "attacker",
-      "hashed:password123"
+      "hashed:password123",
+      undefined
     );
   });
 
@@ -130,7 +132,8 @@ describe("C2 regression: cookie forgery protection", () => {
     expect(mockCreateRegistered).toHaveBeenCalledWith(
       "attacker@evil.com",
       "attacker",
-      "hashed:password123"
+      "hashed:password123",
+      undefined
     );
   });
 
@@ -151,7 +154,8 @@ describe("C2 regression: cookie forgery protection", () => {
     expect(mockUpgrade).toHaveBeenCalledWith(
       "guest-cuid-456",
       "newuser@example.com",
-      "hashed:password123"
+      "hashed:password123",
+      undefined
     );
     expect(mockCreateRegistered).not.toHaveBeenCalled();
   });
@@ -238,7 +242,8 @@ describe("H3 regression: email validation", () => {
     expect(mockCreateRegistered).toHaveBeenCalledWith(
       "valid@example.com",
       "valid",
-      expect.any(String)
+      expect.any(String),
+      undefined
     );
   });
 });
@@ -272,7 +277,8 @@ describe("registerUser validation", () => {
     expect(mockCreateRegistered).toHaveBeenCalledWith(
       "fresh@example.com",
       "fresh",
-      "hashed:password123"
+      "hashed:password123",
+      undefined
     );
   });
 });

@@ -43,7 +43,7 @@ describe("LogoutButton", () => {
     await user.click(screen.getByRole("button", { name: "Log out" }));
 
     expect(mockLogoutUser).toHaveBeenCalledOnce();
-    expect(mockPush).toHaveBeenCalledWith("/login");
+    expect(mockPush).toHaveBeenCalledWith("/");
   });
 
   it("disables the button while logging out", async () => {

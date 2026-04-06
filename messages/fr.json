@@ -89,6 +89,8 @@
       "badges": "Badges",
       "careersSeen": "Fiches vues"
     },
+    "chooseAvatar": "Choisis ton avatar",
+    "changeAvatar": "Changer d'avatar",
     "radarTitle": "Ton radar de préférences",
     "badgesTitle": "Tes badges",
     "locked": "???"
@@ -106,6 +108,20 @@
     "technique": "Technique",
     "routine": "Routine",
     "variete": "Variété"
+  },
+  "nav": {
+    "profile": "Profil",
+    "settings": "Paramètres",
+    "logout": "Déconnexion",
+    "saveProgress": "Sauvegarder"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "theme": "Apparence",
+    "lightMode": "Mode clair",
+    "darkMode": "Mode sombre",
+    "language": "Langue",
+    "languageDescription": "Choisis la langue de l'interface"
   },
   "theme": {
     "toggle": "Changer le thème"
@@ -144,6 +160,7 @@
     "noAccount": "Pas encore de compte ?",
     "hasAccount": "Déjà un compte ?",
     "logout": "Déconnexion",
+    "saveProgress": "Sauvegarder",
     "guestBanner": "Crée un compte pour sauvegarder ta progression !",
     "errors": {
       "invalidEmail": "Adresse email invalide",

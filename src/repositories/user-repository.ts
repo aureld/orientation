@@ -48,20 +48,29 @@ export function findUserByEmail(email: string) {
 export function upgradeGuestToRegistered(
   id: string,
   email: string,
-  passwordHash: string
+  passwordHash: string,
+  avatar?: string
 ) {
   return prisma.user.update({
     where: { id },
-    data: { email, passwordHash, isGuest: false },
+    data: { email, passwordHash, isGuest: false, ...(avatar && { image: avatar }) },
   });
 }
 
 export function createRegisteredUser(
   email: string,
   name: string,
-  passwordHash: string
+  passwordHash: string,
+  avatar?: string
 ) {
   return prisma.user.create({
-    data: { email, name, passwordHash, isGuest: false },
+    data: { email, name, passwordHash, isGuest: false, image: avatar },
+  });
+}
+
+export function updateUserAvatar(id: string, avatar: string) {
+  return prisma.user.update({
+    where: { id },
+    data: { image: avatar },
   });
 }

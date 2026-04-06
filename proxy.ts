@@ -12,13 +12,14 @@ export default function middleware(req: NextRequest): Response {
     const hasSession =
       req.cookies.has("authjs.session-token") ||
       req.cookies.has("__Secure-authjs.session-token");
+    const hasGuestCookie = req.cookies.has("userId");
 
-    if (!hasSession) {
+    if (!hasSession && !hasGuestCookie) {
       const localeMatch = pathname.match(
         new RegExp(`^/(${routing.locales.join("|")})`)
       );
       const locale = localeMatch?.[1] || routing.defaultLocale;
-      return NextResponse.redirect(new URL(`/${locale}/login`, req.url));
+      return NextResponse.redirect(new URL(`/${locale}`, req.url));
     }
   }
 

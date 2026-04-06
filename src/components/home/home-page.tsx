@@ -1,13 +1,14 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useRouter } from "@/i18n/navigation";
+import { useRouter, Link } from "@/i18n/navigation";
 import { useState, useTransition } from "react";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { startGame } from "@/app/actions/game-state";
 
 export default function HomePage() {
   const t = useTranslations("home");
+  const tAuth = useTranslations("auth");
   const router = useRouter();
   const [name, setName] = useState("");
   const [error, setError] = useState(false);
@@ -64,7 +65,14 @@ export default function HomePage() {
         </button>
       </div>
 
-      <div className="mt-12 flex gap-6 text-sm text-muted">
+      <p className="mt-8 text-sm text-muted">
+        {tAuth("hasAccount")}{" "}
+        <Link href="/login" className="text-accent hover:underline">
+          {tAuth("login")}
+        </Link>
+      </p>
+
+      <div className="mt-4 flex gap-6 text-sm text-muted">
         <button
           onClick={() => alert(t("aboutText"))}
           className="hover:text-foreground transition-colors"

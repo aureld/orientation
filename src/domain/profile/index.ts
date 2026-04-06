@@ -6,3 +6,4 @@ export {
   type ProfileVector,
 } from "./dimensions";
 export { accumulateProfile } from "./accumulate";
+export { AVATARS, DEFAULT_AVATAR, isValidAvatar, type Avatar } from "./avatars";

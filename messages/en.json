@@ -89,6 +89,8 @@
       "badges": "Badges",
       "careersSeen": "Careers seen"
     },
+    "chooseAvatar": "Choose your avatar",
+    "changeAvatar": "Change avatar",
     "radarTitle": "Your preferences radar",
     "badgesTitle": "Your badges",
     "locked": "???"
@@ -106,6 +108,20 @@
     "technique": "Technical",
     "routine": "Routine",
     "variete": "Variety"
+  },
+  "nav": {
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Log out",
+    "saveProgress": "Save progress"
+  },
+  "settings": {
+    "title": "Settings",
+    "theme": "Appearance",
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode",
+    "language": "Language",
+    "languageDescription": "Choose the interface language"
   },
   "theme": {
     "toggle": "Toggle theme"
@@ -144,6 +160,7 @@
     "noAccount": "Don't have an account?",
     "hasAccount": "Already have an account?",
     "logout": "Log out",
+    "saveProgress": "Save progress",
     "guestBanner": "Create an account to save your progress!",
     "errors": {
       "invalidEmail": "Invalid email address",

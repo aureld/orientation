@@ -10,7 +10,9 @@ import {
   findUserByEmail,
   upgradeGuestToRegistered,
   createRegisteredUser,
+  updateUserAvatar,
 } from "@/repositories/user-repository";
+import { isValidAvatar } from "@/domain/profile";
 
 function isUniqueConstraintViolation(error: unknown): boolean {
   return (
@@ -39,7 +41,8 @@ function isValidEmail(email: string): boolean {
 
 export async function registerUser(
   rawEmail: string,
-  password: string
+  password: string,
+  avatar?: string
 ): Promise<{ error?: string }> {
   const email = rawEmail.trim();
   if (!isValidEmail(email)) {
@@ -55,6 +58,7 @@ export async function registerUser(
   }
 
   const hashed = await hashPassword(password);
+  const validAvatar = avatar && isValidAvatar(avatar) ? avatar : undefined;
 
   // If there's an existing guest session, upgrade it; otherwise create a new user.
   // The DB unique constraint on email is the ultimate guard against races —
@@ -66,12 +70,12 @@ export async function registerUser(
     if (userId) {
       const existing = await findUserById(userId);
       if (existing?.isGuest) {
-        await upgradeGuestToRegistered(userId, email, hashed);
+        await upgradeGuestToRegistered(userId, email, hashed, validAvatar);
       } else {
-        await createRegisteredUser(email, name, hashed);
+        await createRegisteredUser(email, name, hashed, validAvatar);
       }
     } else {
-      await createRegisteredUser(email, name, hashed);
+      await createRegisteredUser(email, name, hashed, validAvatar);
     }
   } catch (error: unknown) {
     if (isUniqueConstraintViolation(error)) {

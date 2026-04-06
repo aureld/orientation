@@ -1,16 +1,5 @@
-import { auth } from "@/infrastructure/auth";
-import { redirect } from "next/navigation";
 import HomePage from "@/components/home/home-page";
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const session = await auth();
-  if (!session?.user) {
-    const { locale } = await params;
-    redirect(`/${locale}/login`);
-  }
+export default function Page() {
   return <HomePage />;
 }

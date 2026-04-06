@@ -89,6 +89,8 @@
       "badges": "Abzeichen",
       "careersSeen": "Berufe gesehen"
     },
+    "chooseAvatar": "Wähle deinen Avatar",
+    "changeAvatar": "Avatar ändern",
     "radarTitle": "Dein Präferenz-Radar",
     "badgesTitle": "Deine Abzeichen",
     "locked": "???"
@@ -106,6 +108,20 @@
     "technique": "Technisch",
     "routine": "Routine",
     "variete": "Abwechslung"
+  },
+  "nav": {
+    "profile": "Profil",
+    "settings": "Einstellungen",
+    "logout": "Abmelden",
+    "saveProgress": "Speichern"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "theme": "Erscheinungsbild",
+    "lightMode": "Heller Modus",
+    "darkMode": "Dunkler Modus",
+    "language": "Sprache",
+    "languageDescription": "Wähle die Sprache der Benutzeroberfläche"
   },
   "theme": {
     "toggle": "Design ändern"
@@ -144,6 +160,7 @@
     "noAccount": "Noch kein Konto?",
     "hasAccount": "Bereits ein Konto?",
     "logout": "Abmelden",
+    "saveProgress": "Speichern",
     "guestBanner": "Erstelle ein Konto, um deinen Fortschritt zu speichern!",
     "errors": {
       "invalidEmail": "Ungültige E-Mail-Adresse",

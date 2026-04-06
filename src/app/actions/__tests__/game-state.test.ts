@@ -30,6 +30,7 @@ vi.mock("@/repositories/user-repository", () => ({
   createAnonymousUser: vi.fn(),
   findUserById: vi.fn(),
   incrementUserProfile: vi.fn(),
+  updateUserAvatar: vi.fn(),
 }));
 
 vi.mock("@/repositories/game-state-repository", () => ({
@@ -38,14 +39,15 @@ vi.mock("@/repositories/game-state-repository", () => ({
   getUserProgress: vi.fn(),
 }));
 
-import { startGame, saveChoice, completeScenario, getUserGameState } from "../game-state";
+import { startGame, saveChoice, completeScenario, getUserGameState, updateAvatar } from "../game-state";
 import { signCookie } from "@/infrastructure/cookie-signature";
-import { createAnonymousUser, findUserById, incrementUserProfile } from "@/repositories/user-repository";
+import { createAnonymousUser, findUserById, incrementUserProfile, updateUserAvatar } from "@/repositories/user-repository";
 import { saveUserChoice, markScenarioComplete, getUserProgress } from "@/repositories/game-state-repository";
 
 const mockCreateUser = vi.mocked(createAnonymousUser);
 const mockFindUser = vi.mocked(findUserById);
 const mockIncrementProfile = vi.mocked(incrementUserProfile);
+const mockUpdateAvatar = vi.mocked(updateUserAvatar);
 const mockSaveChoice = vi.mocked(saveUserChoice);
 const mockMarkComplete = vi.mocked(markScenarioComplete);
 const mockGetProgress = vi.mocked(getUserProgress);
@@ -140,6 +142,7 @@ describe("getUserGameState", () => {
     mockFindUser.mockResolvedValueOnce({
       id: "user-123",
       name: "Alice",
+      image: "\u{1F98A}",
       manuel: 5, intellectuel: 3, creatif: 0, analytique: 2,
       interieur: 1, exterieur: 4, equipe: 6, independant: 0,
       contactHumain: 7, technique: 2, routine: 1, variete: 3,
@@ -153,6 +156,7 @@ describe("getUserGameState", () => {
 
     expect(result).not.toBeNull();
     expect(result!.name).toBe("Alice");
+    expect(result!.avatar).toBe("\u{1F98A}");
     expect(result!.completedScenarioIds).toEqual(["hopital", "chantier"]);
     expect(result!.choiceCount).toBe(12);
     expect(result!.profile.manuel).toBe(5);
@@ -174,5 +178,35 @@ describe("getUserGameState", () => {
     const result = await getUserGameState();
 
     expect(result).toBeNull();
+  });
+});
+
+describe("updateAvatar", () => {
+  it("updates avatar for authenticated user", async () => {
+    mockCookieStore.get.mockReturnValue({ value: signCookie("user-123") });
+    mockUpdateAvatar.mockResolvedValueOnce({} as never);
+
+    const result = await updateAvatar("\u{1F98A}");
+
+    expect(result).toEqual({});
+    expect(mockUpdateAvatar).toHaveBeenCalledWith("user-123", "\u{1F98A}");
+  });
+
+  it("rejects invalid avatar strings", async () => {
+    mockCookieStore.get.mockReturnValue({ value: signCookie("user-123") });
+
+    const result = await updateAvatar("not-an-avatar");
+
+    expect(result).toEqual({ error: "invalidAvatar" });
+    expect(mockUpdateAvatar).not.toHaveBeenCalled();
+  });
+
+  it("returns error when no session exists", async () => {
+    mockCookieStore.get.mockReturnValue(undefined);
+
+    const result = await updateAvatar("\u{1F98A}");
+
+    expect(result).toEqual({ error: "noSession" });
+    expect(mockUpdateAvatar).not.toHaveBeenCalled();
   });
 });

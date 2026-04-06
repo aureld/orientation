@@ -23,14 +23,14 @@ describe("isPublicPath", () => {
     expect(isPublicPath("/en/register")).toBe(true);
   });
 
-  it("treats root path as protected", () => {
-    expect(isPublicPath("/")).toBe(false);
+  it("treats root path as public (guest entry point)", () => {
+    expect(isPublicPath("/")).toBe(true);
   });
 
-  it("treats locale root as protected", () => {
-    expect(isPublicPath("/fr")).toBe(false);
-    expect(isPublicPath("/de")).toBe(false);
-    expect(isPublicPath("/en")).toBe(false);
+  it("treats locale root as public (guest entry point)", () => {
+    expect(isPublicPath("/fr")).toBe(true);
+    expect(isPublicPath("/de")).toBe(true);
+    expect(isPublicPath("/en")).toBe(true);
   });
 
   it("treats game routes as protected", () => {
