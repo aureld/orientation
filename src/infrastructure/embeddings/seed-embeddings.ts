@@ -1,6 +1,7 @@
 import { prisma } from "@/infrastructure/db";
 import { getEmbeddingProvider } from "@/infrastructure/embeddings";
 import { composeEmbeddingText } from "./compose-text";
+import { toVectorLiteral } from "./vector-search";
 import type { EmbeddableTranslation } from "./compose-text";
 import type { EmbeddingProviderName } from "./types";
 
@@ -68,7 +69,7 @@ export async function generateAndStoreEmbeddings(
     const embeddings = await provider.embedBatch(texts);
 
     for (let j = 0; j < batch.length; j++) {
-      const vectorStr = `[${embeddings[j].join(",")}]`;
+      const vectorStr = toVectorLiteral(embeddings[j]);
       await prisma.$executeRaw`
         UPDATE "ProfessionTranslation"
         SET embedding = ${vectorStr}::vector

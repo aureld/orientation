@@ -3,6 +3,22 @@ import { prisma } from "@/infrastructure/db";
 const EXPECTED_DIMENSIONS = 1024;
 
 /**
+ * Validate every element is a finite number and build a pgvector literal.
+ * Prevents SQL injection from compromised embedding providers returning
+ * non-numeric values (e.g. "0.1]; DROP TABLE users; --").
+ */
+export function toVectorLiteral(embedding: number[]): string {
+  for (let i = 0; i < embedding.length; i++) {
+    if (typeof embedding[i] !== "number" || !Number.isFinite(embedding[i])) {
+      throw new Error(
+        `Embedding contains non-finite value at index ${i}: ${embedding[i]}`
+      );
+    }
+  }
+  return `[${embedding.join(",")}]`;
+}
+
+/**
  * Convert cosine distance to an intuitive 0-100 score.
  * Cosine distance for text embeddings rarely reaches 0.0 even for
  * near-identical content — a distance of ~0.3 is already an excellent match.
@@ -27,7 +43,7 @@ export async function storeEmbedding(
       `Expected ${EXPECTED_DIMENSIONS} dimensions, got ${embedding.length}`
     );
   }
-  const vectorStr = `[${embedding.join(",")}]`;
+  const vectorStr = toVectorLiteral(embedding);
   await prisma.$executeRaw`
     UPDATE "ProfessionTranslation"
     SET embedding = ${vectorStr}::vector
@@ -40,7 +56,7 @@ export async function searchByVector(
   locale: string,
   limit = 10
 ): Promise<VectorSearchResult[]> {
-  const vectorStr = `[${queryVector.join(",")}]`;
+  const vectorStr = toVectorLiteral(queryVector);
   return prisma.$queryRaw<VectorSearchResult[]>`
     SELECT "professionId", name,
            embedding <=> ${vectorStr}::vector AS distance

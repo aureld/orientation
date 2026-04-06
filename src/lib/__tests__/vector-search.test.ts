@@ -14,6 +14,7 @@ import {
   findSimilarProfessions,
   hasEmbeddings,
   distanceToScore,
+  toVectorLiteral,
 } from "@/infrastructure/embeddings/vector-search";
 
 const mockExecuteRaw = vi.mocked(prisma.$executeRaw);
@@ -132,5 +133,64 @@ describe("distanceToScore", () => {
   it("never exceeds 100 or goes below 0", () => {
     expect(distanceToScore(-0.1)).toBe(100);
     expect(distanceToScore(2.0)).toBe(0);
+  });
+});
+
+describe("toVectorLiteral", () => {
+  it("converts a valid number array to a pgvector string", () => {
+    expect(toVectorLiteral([0.1, 0.2, -0.3])).toBe("[0.1,0.2,-0.3]");
+  });
+
+  it("handles zero and negative values", () => {
+    expect(toVectorLiteral([0, -1, 1])).toBe("[0,-1,1]");
+  });
+
+  it("rejects NaN values in the embedding", () => {
+    expect(() => toVectorLiteral([0.1, NaN, 0.3])).toThrow(
+      /non-finite value/
+    );
+  });
+
+  it("rejects Infinity values in the embedding", () => {
+    expect(() => toVectorLiteral([0.1, Infinity, 0.3])).toThrow(
+      /non-finite value/
+    );
+  });
+
+  it("rejects -Infinity values in the embedding", () => {
+    expect(() => toVectorLiteral([0.1, -Infinity, 0.3])).toThrow(
+      /non-finite value/
+    );
+  });
+
+  it("rejects non-number values coerced into the array", () => {
+    const malicious = [0.1, "0.2; DROP TABLE users" as unknown as number, 0.3];
+    expect(() => toVectorLiteral(malicious)).toThrow(/non-finite value/);
+  });
+
+  it("works with a valid 1024-dimension embedding", () => {
+    const embedding = Array.from({ length: 1024 }, (_, i) => i * 0.001);
+    const result = toVectorLiteral(embedding);
+    expect(result).toMatch(/^\[[\d.,e+-]+\]$/);
+  });
+});
+
+describe("storeEmbedding — validation", () => {
+  it("rejects embeddings containing NaN", async () => {
+    const embedding = Array.from({ length: 1024 }, () => 0.1);
+    embedding[512] = NaN;
+    await expect(storeEmbedding(42, embedding)).rejects.toThrow(
+      /non-finite value/
+    );
+    expect(mockExecuteRaw).not.toHaveBeenCalled();
+  });
+
+  it("rejects embeddings containing non-number values", async () => {
+    const embedding = Array.from({ length: 1024 }, () => 0.1);
+    (embedding as unknown[])[0] = "malicious";
+    await expect(storeEmbedding(42, embedding)).rejects.toThrow(
+      /non-finite value/
+    );
+    expect(mockExecuteRaw).not.toHaveBeenCalled();
   });
 });

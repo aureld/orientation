@@ -13,6 +13,7 @@ import { PrismaClient } from "../src/generated/prisma/client.js";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { composeEmbeddingText } from "../src/lib/embeddings/compose-text.js";
 import { getEmbeddingProvider } from "../src/lib/embeddings/index.js";
+import { toVectorLiteral } from "../src/lib/embeddings/vector-search.js";
 import type { EmbeddingProviderName } from "../src/lib/embeddings/types.js";
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
@@ -77,7 +78,7 @@ async function main() {
     const embeddings = await provider.embedBatch(texts);
 
     for (let j = 0; j < batch.length; j++) {
-      const vectorStr = `[${embeddings[j].join(",")}]`;
+      const vectorStr = toVectorLiteral(embeddings[j]);
       await prisma.$executeRaw`
         UPDATE "ProfessionTranslation"
         SET embedding = ${vectorStr}::vector
