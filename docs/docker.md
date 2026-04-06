@@ -1,6 +1,6 @@
 # Docker Deployment
 
-This document covers how to build and run Aventure Metier with Docker, including an optional hardened configuration for CTF / security testing.
+This document covers how to build and run Vocatia with Docker, including an optional hardened configuration for CTF / security testing.
 
 ## Prerequisites
 

@@ -1,8 +1,8 @@
-# Architecture — Aventure Métier
+# Architecture — Vocatia
 
 ## Overview
 
-Aventure Métier is a multilingual career orientation game for young people in Canton Zurich. The architecture follows a layered pattern designed to support growing data sources, authentication, and future features like study paths and subscription tiers.
+Vocatia is a multilingual career orientation game for young people in Canton Zurich. The architecture follows a layered pattern designed to support growing data sources, authentication, and future features like study paths and subscription tiers.
 
 ## Stack
 

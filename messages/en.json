@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "Career Adventure — Discover Your Future Career",
+    "title": "Vocatia — Discover Your Future Career",
     "description": "A career orientation game to discover Swiss professions"
   },
   "common": {
@@ -13,7 +13,7 @@
     "loading": "Loading..."
   },
   "home": {
-    "title": "Career Adventure",
+    "title": "Vocatia",
     "subtitle": "Discover your future career through adventures!",
     "namePlaceholder": "Your first name...",
     "nameRequired": "Enter your first name!",
@@ -22,10 +22,10 @@
     "about": "About",
     "reset": "Start over",
     "resetConfirm": "Are you sure? All your progress will be deleted.",
-    "aboutText": "Career Adventure — A career orientation game based on data from orientation.ch.\n\nDesigned for young people in the Canton of Zurich.\n\n31 real Swiss professions (CFC/AFP)\n11 immersive scenarios\n\nHappy exploring!"
+    "aboutText": "Vocatia — A career orientation game based on data from orientation.ch.\n\nDesigned for young people in the Canton of Zurich.\n\n31 real Swiss professions (CFC/AFP)\n11 immersive scenarios\n\nHappy exploring!"
   },
   "scenarios": {
-    "title": "Career Adventure",
+    "title": "Vocatia",
     "welcome": "Hi {name}!",
     "instructions": "Choose a scenario and experience a day in a new career.",
     "progress": "Progress",

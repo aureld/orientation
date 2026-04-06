@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "Aventure Métier — Découvre ton futur métier",
+    "title": "Vocatia — Découvre ton futur métier",
     "description": "Un jeu d'orientation professionnelle pour découvrir les métiers suisses"
   },
   "common": {
@@ -13,7 +13,7 @@
     "loading": "Chargement..."
   },
   "home": {
-    "title": "Aventure Métier",
+    "title": "Vocatia",
     "subtitle": "Découvre ton futur métier en vivant des aventures !",
     "namePlaceholder": "Ton prénom...",
     "nameRequired": "Entre ton prénom !",
@@ -22,10 +22,10 @@
     "about": "À propos",
     "reset": "Recommencer",
     "resetConfirm": "Tu es sûr ? Toute ta progression sera effacée.",
-    "aboutText": "Aventure Métier — Un jeu d'orientation professionnelle basé sur les données de orientation.ch.\n\nConçu pour les jeunes du Canton de Zurich.\n\n187 métiers suisses réels (CFC)\n11 scénarios immersifs\n\nBonne exploration !"
+    "aboutText": "Vocatia — Un jeu d'orientation professionnelle basé sur les données de orientation.ch.\n\nConçu pour les jeunes du Canton de Zurich.\n\n187 métiers suisses réels (CFC)\n11 scénarios immersifs\n\nBonne exploration !"
   },
   "scenarios": {
-    "title": "Aventure Métier",
+    "title": "Vocatia",
     "welcome": "Salut {name} !",
     "instructions": "Choisis un scénario et vis une journée dans un nouveau métier.",
     "progress": "Progression",

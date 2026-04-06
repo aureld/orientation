@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "Berufsabenteuer — Entdecke deinen zukünftigen Beruf",
+    "title": "Vocatia — Entdecke deinen zukünftigen Beruf",
     "description": "Ein Berufsorientierungsspiel zur Entdeckung der Schweizer Berufe"
   },
   "common": {
@@ -13,7 +13,7 @@
     "loading": "Laden..."
   },
   "home": {
-    "title": "Berufsabenteuer",
+    "title": "Vocatia",
     "subtitle": "Entdecke deinen zukünftigen Beruf durch Abenteuer!",
     "namePlaceholder": "Dein Vorname...",
     "nameRequired": "Gib deinen Vornamen ein!",
@@ -22,10 +22,10 @@
     "about": "Über uns",
     "reset": "Neu starten",
     "resetConfirm": "Bist du sicher? Dein gesamter Fortschritt wird gelöscht.",
-    "aboutText": "Berufsabenteuer — Ein Berufsorientierungsspiel basierend auf Daten von berufsberatung.ch.\n\nEntwickelt für Jugendliche im Kanton Zürich.\n\n31 echte Schweizer Berufe (EFZ/EBA)\n11 immersive Szenarien\n\nViel Spass beim Erkunden!"
+    "aboutText": "Vocatia — Ein Berufsorientierungsspiel basierend auf Daten von berufsberatung.ch.\n\nEntwickelt für Jugendliche im Kanton Zürich.\n\n31 echte Schweizer Berufe (EFZ/EBA)\n11 immersive Szenarien\n\nViel Spass beim Erkunden!"
   },
   "scenarios": {
-    "title": "Berufsabenteuer",
+    "title": "Vocatia",
     "welcome": "Hallo {name}!",
     "instructions": "Wähle ein Szenario und erlebe einen Tag in einem neuen Beruf.",
     "progress": "Fortschritt",

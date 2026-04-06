@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-"Aventure Métier" — A multilingual career orientation game for young people in Canton Zurich. Players explore interactive scenarios representing different professional sectors, make choices that build a personality profile across 12 dimensions, and get matched to real Swiss professions (CFC/AFP) using both cosine similarity and semantic vector search (pgvector). Data sourced from orientation.ch.
+"Vocatia" (vocatia.ch) — A multilingual career orientation game for young people in Canton Zurich. Players explore interactive scenarios representing different professional sectors, make choices that build a personality profile across 12 dimensions, and get matched to real Swiss professions (CFC/AFP) using both cosine similarity and semantic vector search (pgvector). Data sourced from orientation.ch.
 
 ## Development Commands
 

@@ -1,0 +1,383 @@
+================================================================================
+       SECURITY VULNERABILITY REPORT — "Aventure Metier" CTF Challenge
+================================================================================
+Application: Next.js 16 + Prisma + pgvector career orientation game
+Date:        2026-04-06
+Auditor:     Automated security assessment
+
+================================================================================
+  EXECUTIVE SUMMARY
+================================================================================
+
+15 vulnerabilities identified across 4 severity levels:
+  - CRITICAL:  4
+  - HIGH:      4
+  - MEDIUM:    4
+  - LOW:       3
+
+Primary attack surfaces: authentication bypass, cookie forgery, SQL injection
+via raw vector queries, hardcoded secrets, and missing input validation.
+
+
+================================================================================
+  CRITICAL VULNERABILITIES
+================================================================================
+
+[C1] WEAK DEFAULT AUTH_SECRET IN DOCKER COMPOSE (CORRECTED — .env IS GITIGNORED)
+────────────────────────────────────────────────────────────────────────────────
+File:     docker-compose.yml:26
+Code:     AUTH_SECRET: ${AUTH_SECRET:-change-me-in-production}  [FIXED]
+
+Note:     .env is gitignored (.env* pattern) and NOT committed. The local .env
+          value "dev-secret-change-in-production" is dev-only and not exposed.
+
+Impact:   The docker-compose.yml fallback meant that running `docker-compose up`
+          without setting AUTH_SECRET silently used a guessable secret. Anyone
+          who deployed with defaults could have JWTs forged.
+
+Fix:      Changed to ${AUTH_SECRET:?...} which errors out if unset, forcing
+          operators to provide a real secret.
+
+CVSS: 6.2 (Medium — requires deployment without explicit env var)
+
+
+[C2] COOKIE-BASED USER ID FORGERY → HORIZONTAL PRIVILEGE ESCALATION
+────────────────────────────────────────────────────────────────────────────────
+Files:    src/app/actions/game-state.ts:15-22
+          src/app/actions/auth.ts:13-18, 39-41
+          src/repositories/user-repository.ts:48-57
+
+The guest identity system falls back to an unsigned cookie:
+
+  // game-state.ts:22
+  return cookieStore.get("userId")?.value ?? null;  // NO signature, NO validation
+
+The same pattern is used in auth.ts:13-18 for getUserId().
+
+When registerUser() is called (auth.ts:39-41):
+  const userId = await getUserId();   // reads forged cookie
+  if (userId) {
+    await upgradeGuestToRegistered(userId, email, hashed);  // overwrites victim
+  }
+
+upgradeGuestToRegistered (user-repository.ts:48-57) performs a blind UPDATE:
+  prisma.user.update({
+    where: { id },              // attacker-controlled via cookie
+    data: { email, passwordHash, isGuest: false },
+  });
+
+No checks: does user exist? Is user a guest? Is caller the owner?
+
+Exploit:
+  1. Create guest account → receive cookie userId=guest-abc
+  2. Set cookie to userId=<victim-id>
+  3. POST registerUser("attacker@evil.com", "password")
+  4. Victim's account now has attacker's email and password
+  5. Login as victim with attacker credentials
+
+CVSS: 9.1 (Critical)
+
+
+[C3] RACE CONDITION (TOCTOU) IN USER REGISTRATION
+────────────────────────────────────────────────────────────────────────────────
+File:     src/app/actions/auth.ts:31-45
+
+  const existing = await findUserByEmail(email);   // CHECK
+  if (existing) return { error: "emailTaken" };
+  const hashed = await hashPassword(password);     // ~250ms bcrypt delay
+  await createRegisteredUser(email, name, hashed);  // USE
+
+Two concurrent registrations with the same email can both pass the CHECK
+before either reaches the USE step. Result: database constraint violation
+(Prisma P2002) that is not caught, causing an unhandled 500 error.
+
+The bcrypt hashing delay (~250ms at 12 rounds) widens the race window.
+
+CVSS: 8.7 (Critical — also enables denial-of-service via repeated races)
+
+
+[C4] SQL INJECTION VIA VECTOR EMBEDDING STRING INTERPOLATION
+────────────────────────────────────────────────────────────────────────────────
+File:     src/infrastructure/embeddings/vector-search.ts:30-35
+
+  const vectorStr = `[${embedding.join(",")}]`;     // JS string interpolation
+  await prisma.$executeRaw`
+    UPDATE "ProfessionTranslation"
+    SET embedding = ${vectorStr}::vector             // injected as string param
+    WHERE id = ${translationId}
+  `;
+
+While Prisma's tagged template literal parameterizes ${vectorStr}, the vector
+is constructed from the embedding[] array via JS template literals FIRST.
+
+If the embedding provider (Ollama/OpenAI) is compromised or returns malicious
+data, the array values are joined without type validation. The dimension check
+(line 25) only validates length, not that each element is a finite number.
+
+A compromised embedding response containing non-numeric values would cause
+PostgreSQL errors. With certain PostgreSQL/pgvector edge cases, carefully
+crafted array values could escape the vector cast.
+
+The same pattern exists in:
+  - src/infrastructure/embeddings/seed-embeddings.ts
+  - scripts/generate-embeddings.ts
+
+CVSS: 7.5 (High, requires compromised upstream — but no input sanitization)
+
+
+================================================================================
+  HIGH VULNERABILITIES
+================================================================================
+
+[H1] MISSING secure FLAG ON GUEST COOKIE
+────────────────────────────────────────────────────────────────────────────────
+File:     src/app/actions/game-state.ts:28-33
+
+  cookieStore.set(USER_COOKIE, user.id, {
+    httpOnly: true,
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 90,  // 90 days!
+    path: "/",
+    // MISSING: secure: true
+  });
+
+Without secure: true, the userId cookie is transmitted over HTTP, enabling
+man-in-the-middle interception. Combined with C2, this allows network-level
+account takeover. The 90-day lifetime maximizes the attack window.
+
+CVSS: 7.4
+
+
+[H2] TIMING-BASED ACCOUNT ENUMERATION
+────────────────────────────────────────────────────────────────────────────────
+File:     src/app/actions/auth.ts:57-95
+
+loginUser() has two code paths with different timing:
+  Path A (no account):  findUserByEmail → null → return immediately (~5ms)
+  Path B (wrong pass):  findUserByEmail → user → verifyPassword/bcrypt (~250ms)
+
+An attacker can distinguish "account exists" from "no account" by measuring
+response time. The ~245ms difference is trivially detectable.
+
+Additionally, server logs differentiate the two cases:
+  Line 67: "login failed: no account for ${email}"
+  Line 74: "login failed: wrong password for ${email}"
+
+CVSS: 5.8
+
+
+[H3] WEAK EMAIL VALIDATION
+────────────────────────────────────────────────────────────────────────────────
+File:     src/app/actions/auth.ts:24-26
+
+  if (!email || !email.includes("@")) {
+    return { error: "invalidEmail" };
+  }
+
+Accepts: "@", "a@b", "  @  ", "test@.com", "a@b@c"
+No length limit, no domain validation, no trimming, no RFC 5322 compliance.
+
+CVSS: 6.5
+
+
+[H4] WEAK PASSWORD POLICY (6 CHARACTERS)
+────────────────────────────────────────────────────────────────────────────────
+File:     src/app/actions/auth.ts:27-29
+
+  if (password.length < 6) {
+    return { error: "weakPassword" };
+  }
+
+Accepts: "123456", "aaaaaa", "qwerty" — all in top-100 password lists.
+NIST SP 800-63B recommends minimum 12 characters.
+No complexity requirements, no breach-list checking.
+
+CVSS: 7.2
+
+
+================================================================================
+  MEDIUM VULNERABILITIES
+================================================================================
+
+[M1] CRON ENDPOINT: TIMING-UNSAFE TOKEN COMPARISON + INFO LEAK
+────────────────────────────────────────────────────────────────────────────────
+File:     src/app/api/cron/ingest/route.ts:5-17
+
+  if (authHeader !== `Bearer ${expectedToken}`) {  // timing-vulnerable
+
+Uses JavaScript string === comparison, which is vulnerable to timing attacks
+(can reveal token length and character-by-character content).
+
+Also: if CRON_SECRET is unset, returns HTTP 500 with body:
+  { error: "CRON_SECRET not configured" }
+This confirms the endpoint exists and reveals configuration state.
+
+Fix: Use crypto.timingSafeEqual() and return 401 uniformly.
+
+CVSS: 6.5
+
+
+[M2] API ROUTES BYPASS AUTHENTICATION MIDDLEWARE
+────────────────────────────────────────────────────────────────────────────────
+File:     proxy.ts:28-30
+
+  export const config = {
+    matcher: "/((?!api|trpc|_next|_vercel|.*\\..*).*)",
+  };
+
+All /api/* paths are excluded from the middleware matcher. The cron endpoint
+has its own auth (Bearer token), but any new /api/ route added by developers
+will be unprotected by default — a security footgun.
+
+CVSS: 5.9
+
+
+[M3] MISSING SECURITY HEADERS (CSP, HSTS, X-Frame-Options)
+────────────────────────────────────────────────────────────────────────────────
+File:     next.config.ts (11 lines, no headers config)
+
+No Content-Security-Policy → XSS mitigation absent
+No Strict-Transport-Security → downgrade attacks possible
+No X-Frame-Options → clickjacking attacks possible
+No X-Content-Type-Options → MIME sniffing possible
+No Referrer-Policy → referrer leaks possible
+
+CVSS: 5.0
+
+
+[M4] SSRF RISK VIA OLLAMA_URL ENVIRONMENT VARIABLE
+────────────────────────────────────────────────────────────────────────────────
+File:     src/infrastructure/embeddings/ollama.ts:10, 19
+
+  this.baseUrl = process.env.OLLAMA_URL || "http://localhost:11434";
+  const response = await fetch(`${this.baseUrl}/api/embed`, { ... });
+
+No URL validation: if OLLAMA_URL is set to an internal service URL
+(e.g., http://169.254.169.254/latest/meta-data/ on AWS), the server
+will make authenticated requests to internal endpoints.
+
+CVSS: 5.5
+
+
+================================================================================
+  LOW VULNERABILITIES
+================================================================================
+
+[L1] PII LEAKAGE IN SERVER LOGS
+────────────────────────────────────────────────────────────────────────────────
+Files:    src/app/actions/auth.ts:67, 74, 88, 92
+
+  console.warn(`[auth] login failed: no account for ${email}`);
+  console.warn(`[auth] login failed: wrong password for ${email}`);
+  console.error(`[auth] unexpected signIn error for ${email}:`, err);
+
+Email addresses are logged in plaintext. In production, these logs may be
+forwarded to centralized logging (CloudWatch, Datadog) accessible to broader
+teams, violating data minimization (GDPR Art. 5).
+
+
+[L2] NO RATE LIMITING ON AUTH ENDPOINTS
+────────────────────────────────────────────────────────────────────────────────
+Files:    src/app/actions/auth.ts (registerUser, loginUser)
+          src/app/api/cron/ingest/route.ts
+
+No rate limiting anywhere in the application. Enables:
+  - Password brute-forcing (especially with 6-char minimum)
+  - Account enumeration at scale
+  - DoS via expensive operations (bcrypt hashing, data ingestion)
+
+
+[L3] MISSING INPUT SANITIZATION ON USER NAME
+────────────────────────────────────────────────────────────────────────────────
+File:     src/app/actions/game-state.ts:26
+
+  const user = await createAnonymousUser(name.trim());
+
+Only .trim() applied. No length limit, no character restriction, no XSS
+sanitization. An extremely long name could cause storage issues.
+
+
+================================================================================
+  DOCKER-SPECIFIC FINDINGS
+================================================================================
+
+[D1] HARDCODED DATABASE CREDENTIALS
+File:     docker-compose.yml:6-8
+  POSTGRES_USER: orientation
+  POSTGRES_PASSWORD: orientation
+Trivial credentials, no secret management.
+
+[D2] DATABASE PORT EXPOSED TO HOST (non-CTF mode)
+File:     docker-compose.yml:9-10
+  ports: "5432:5432"
+Database accessible from host network. Fixed in CTF mode.
+
+[D3] CTF HARDENING IS OPT-IN (POSITIVE)
+File:     docker-compose.ctf.yml
+The CTF overlay adds: read-only FS, cap_drop ALL, no-new-privileges,
+resource limits, network isolation. Good hardening — but only active
+when explicitly using the CTF compose file.
+
+
+================================================================================
+  POSITIVE SECURITY FINDINGS
+================================================================================
+
++ Password hashing: bcryptjs with 12 salt rounds (src/infrastructure/password.ts)
++ HttpOnly cookies: guest userId cookie prevents JS access
++ SameSite=lax: CSRF protection on cookies
++ Prisma ORM: all standard queries are parameterized (no SQLi in repositories)
++ JWT session strategy: stateless, server-validated tokens via NextAuth
++ Non-root Docker user: nextjs (uid 1001) in production image
++ Multi-stage Docker build: no dev dependencies in production image
++ Auth middleware: proxy.ts checks for session cookie on non-public paths
++ CTF hardening mode: comprehensive isolation when enabled
+
+
+================================================================================
+  ATTACK CHAIN: FULL ACCOUNT TAKEOVER (C1 + C2 combined)
+================================================================================
+
+Prerequisite: Repository access (e.g., public GitHub, leaked .env)
+
+1. Extract AUTH_SECRET from .env → "dev-secret-change-in-production"
+2. Forge JWT with arbitrary user ID:
+     { sub: "target-user-cuid", email: "x@x.com", iat: <now> }
+3. Set browser cookie: authjs.session-token = <forged JWT>
+4. All server actions (getUserId) now return the target user's ID
+5. Attacker has full access to victim's game state, profile, and data
+
+Alternative (without JWT forgery):
+1. Set browser cookie: userId = <target-user-cuid>
+2. Call registerUser("attacker@evil.com", "newpass")
+3. upgradeGuestToRegistered blindly overwrites the target account
+4. Login as victim using attacker credentials
+
+
+================================================================================
+  REMEDIATION PRIORITY
+================================================================================
+
+IMMEDIATE (deploy-blocking):
+  1. Add .env to .gitignore, rotate AUTH_SECRET in production
+  2. Sign or HMAC the userId cookie (or use session-only identity)
+  3. Add ownership check in upgradeGuestToRegistered (verify isGuest)
+  4. Catch P2002 in registerUser for race condition
+
+THIS WEEK:
+  5. Use crypto.timingSafeEqual for CRON_SECRET comparison
+  6. Add secure: true to all cookie settings
+  7. Implement constant-time login (always run bcrypt)
+  8. Add security headers in next.config.ts
+
+THIS MONTH:
+  9. Add rate limiting (upstash/ratelimit or similar)
+  10. Strengthen email validation (zod email schema)
+  11. Increase password minimum to 12 chars + complexity
+  12. Validate embedding array elements are finite numbers
+  13. Validate/allowlist OLLAMA_URL
+  14. Remove PII from server logs
+
+================================================================================
+  END OF REPORT
+================================================================================

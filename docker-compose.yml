@@ -1,3 +1,9 @@
+# Load secrets from .env.docker (not the dev .env).
+# Copy .env.example → .env.docker and fill in real values.
+env_file:
+  - path: .env.docker
+    required: false
+
 services:
   db:
     image: pgvector/pgvector:pg17
@@ -23,7 +29,7 @@ services:
       - "3000:3000"
     environment:
       DATABASE_URL: postgresql://orientation:orientation@db:5432/orientation?schema=public
-      AUTH_SECRET: ${AUTH_SECRET:-change-me-in-production}
+      AUTH_SECRET: "${AUTH_SECRET:?Set AUTH_SECRET in your environment (use openssl rand -base64 32)}"
       AUTH_URL: ${AUTH_URL:-http://localhost:3000}
     depends_on:
       db:
