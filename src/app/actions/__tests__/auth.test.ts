@@ -152,6 +152,54 @@ describe("C2 regression: cookie forgery protection", () => {
   });
 });
 
+// ── C3 Regression: TOCTOU race in registration ─────────────────────────
+
+describe("C3 regression: race condition in registerUser", () => {
+  it("returns emailTaken when createRegisteredUser hits unique constraint (P2002)", async () => {
+    // Simulate two concurrent registrations: the CHECK passes for both,
+    // but the second CREATE hits the unique constraint on email.
+    const prismaError = new Error("Unique constraint failed on the fields: (`email`)");
+    Object.assign(prismaError, { code: "P2002", clientVersion: "5.0.0" });
+    (prismaError as Record<string, unknown>).name = "PrismaClientKnownRequestError";
+
+    mockCreateRegistered.mockRejectedValueOnce(prismaError);
+
+    const result = await registerUser("race@example.com", "password123");
+
+    expect(result).toEqual({ error: "emailTaken" });
+  });
+
+  it("returns emailTaken when upgradeGuestToRegistered hits unique constraint (P2002)", async () => {
+    // Guest upgrade path can also race if another request already took the email
+    const signedGuestId = signCookie("guest-race-789");
+    mockCookieStore.get.mockReturnValue({ value: signedGuestId });
+    mockFindById.mockResolvedValue({
+      id: "guest-race-789",
+      isGuest: true,
+    } as never);
+
+    const prismaError = new Error("Unique constraint failed on the fields: (`email`)");
+    Object.assign(prismaError, { code: "P2002", clientVersion: "5.0.0" });
+    (prismaError as Record<string, unknown>).name = "PrismaClientKnownRequestError";
+
+    mockUpgrade.mockRejectedValueOnce(prismaError);
+
+    const result = await registerUser("race@example.com", "password123");
+
+    expect(result).toEqual({ error: "emailTaken" });
+  });
+
+  it("re-throws non-P2002 Prisma errors", async () => {
+    const otherError = new Error("Connection refused");
+
+    mockCreateRegistered.mockRejectedValueOnce(otherError);
+
+    await expect(registerUser("crash@example.com", "password123")).rejects.toThrow(
+      "Connection refused"
+    );
+  });
+});
+
 // ── Basic auth validation ─────────────────────────────────────────────
 
 describe("registerUser validation", () => {

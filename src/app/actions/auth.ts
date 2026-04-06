@@ -12,6 +12,15 @@ import {
   createRegisteredUser,
 } from "@/repositories/user-repository";
 
+function isUniqueConstraintViolation(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as { code: unknown }).code === "P2002"
+  );
+}
+
 async function getUserId(): Promise<string | null> {
   const session = await auth();
   if (session?.user?.id) return session.user.id;
@@ -39,18 +48,28 @@ export async function registerUser(
 
   const hashed = await hashPassword(password);
 
-  // If there's an existing guest session, upgrade it; otherwise create a new user
+  // If there's an existing guest session, upgrade it; otherwise create a new user.
+  // The DB unique constraint on email is the ultimate guard against races —
+  // two concurrent registrations can both pass the findUserByEmail check above,
+  // so we catch P2002 here to handle the second writer gracefully.
   const userId = await getUserId();
   const name = email.split("@")[0];
-  if (userId) {
-    const existing = await findUserById(userId);
-    if (existing?.isGuest) {
-      await upgradeGuestToRegistered(userId, email, hashed);
+  try {
+    if (userId) {
+      const existing = await findUserById(userId);
+      if (existing?.isGuest) {
+        await upgradeGuestToRegistered(userId, email, hashed);
+      } else {
+        await createRegisteredUser(email, name, hashed);
+      }
     } else {
       await createRegisteredUser(email, name, hashed);
     }
-  } else {
-    await createRegisteredUser(email, name, hashed);
+  } catch (error: unknown) {
+    if (isUniqueConstraintViolation(error)) {
+      return { error: "emailTaken" };
+    }
+    throw error;
   }
 
   // Auto-login after registration
